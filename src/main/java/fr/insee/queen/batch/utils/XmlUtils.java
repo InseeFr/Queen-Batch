@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -191,10 +192,10 @@ public class XmlUtils {
 				return;
 			}
 			Transformer transformer = TransformerFactory.newInstance().newTransformer();
-			transformer.transform(new DOMSource(questionnaireXml), new StreamResult(new File("src/main/resources/tempQuestionnaire.xml")));
+			transformer.transform(new DOMSource(questionnaireXml), new StreamResult(Files.createTempFile("tempQuestionnaire","xml").toFile()));
 			XMLLunaticToXSDData xmlLunaticToXSDData = new XMLLunaticToXSDData();
 			// Creating Data.xsd
-			questionnaireXml.setDocumentURI("src/main/resources/tempQuestionnaire.xml");
+			questionnaireXml.setDocumentURI(Constants.TEMP_FOLDER +"/tempQuestionnaire.xml");
 			File fileQuestionnaireXml = new File(questionnaireXml.getDocumentURI());
 			File xsdFile = xmlLunaticToXSDData.transform(fileQuestionnaireXml);
 			fileQuestionnaireXml.delete();
@@ -223,8 +224,8 @@ public class XmlUtils {
 				return;
 			}
 			Transformer transformer = TransformerFactory.newInstance().newTransformer();
-			transformer.transform(new DOMSource(questionnaireXml), new StreamResult(new File("src/main/resources/tempQuestionnaire.xml")));
-			questionnaireXml.setDocumentURI("src/main/resources/tempQuestionnaire.xml");
+			transformer.transform(new DOMSource(questionnaireXml), new StreamResult(Files.createTempFile("tempQuestionnaire","xml").toFile()));
+			questionnaireXml.setDocumentURI(Constants.TEMP_FOLDER +"/tempQuestionnaire.xml");
 			SchemaValidator sv = new SchemaValidator(Modele.HIERARCHICAL);
 			File fileQuestionnaireXml = new File(questionnaireXml.getDocumentURI());
 			sv.validateFile(fileQuestionnaireXml);
@@ -281,7 +282,7 @@ public class XmlUtils {
 		            if (node.getNodeType() == Node.ELEMENT_NODE) {
 		                Node copyNode = dataXml.importNode(node, true);
 		                dataXml.appendChild(copyNode);
-		                transformer.transform(new DOMSource(dataXml), new StreamResult(new File("src/main/resources/tempData.xml")));
+		                transformer.transform(new DOMSource(dataXml), new StreamResult(Files.createTempFile("tempData","xml").toFile()));
 
 		    			//Validation data
 		    			SchemaFactory factoryData = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -291,14 +292,14 @@ public class XmlUtils {
 		    			Validator validatorData = schemaData.newValidator();
 		    			validatorData.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 		    			validatorData.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-		    			fis = new FileInputStream(new File("src/main/resources/tempData.xml"));
+		    			fis = new FileInputStream(new File(Constants.TEMP_FOLDER +"/tempData.xml"));
 		    			validatorData.validate(new StreamSource(fis));
 		    			fis.close();
 		    			dataXml.removeChild(copyNode);
 		            }
 		        }
 			}
-			File fileDataXml = new File("src/main/resources/tempData.xml");
+			File fileDataXml = new File(Constants.TEMP_FOLDER + "/tempData.xml");
 			if(fileDataXml.exists()) {
 				fileDataXml.delete();
 			}
@@ -551,7 +552,7 @@ public class XmlUtils {
 			Document dataXml = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 			Transformer transformer = TransformerFactory.newInstance().newTransformer();
 			XMLLunaticDataToJSON xmlLunaticDataToJSON = new XMLLunaticDataToJSON();
-			File fileDataXml = new File("src/main/resources/tempFileData.xml");
+			File fileDataXml = Files.createTempFile("tempFileData","xml").toFile();
 			Node copyNode = dataXml.importNode(data, true);
 			dataXml.appendChild(copyNode);
 			transformer.transform(new DOMSource(dataXml), new StreamResult(fileDataXml));

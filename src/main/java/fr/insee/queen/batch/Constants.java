@@ -31,7 +31,7 @@ public class Constants {
 	public static final String SURVEY_UNIT = "survey_unit";
 	public static final String CAMPAIGN_ID = "campaign.id";
 
-	public static final String TEMP_FOLDER_PATH = System.getProperty("java.io.tmpdir")+"/"+"lunatic-test";
+	public static final String TEMP_FOLDER_PATH = System.getProperty("java.io.tmpdir")+"/"+"queen-batch";
 	public static final Path TEMP_FOLDER= getTempDir(TEMP_FOLDER_PATH);
 
 	private Constants() {
@@ -39,6 +39,7 @@ public class Constants {
 	}
 
 	public static Path getTempDir(String pathFolder) {
+		logger.info("temp directory is: "+ pathFolder);
 		Path tempDirPath = null;
 		File dir = new File(pathFolder);
 

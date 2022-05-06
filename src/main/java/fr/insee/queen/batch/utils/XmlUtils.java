@@ -9,6 +9,8 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -99,6 +101,14 @@ public class XmlUtils {
 		sample.setFileName(fileName);
 		sample.setCampaign(xmlToCampaign(sample.getFileName()));
 		sample.setSurveyUnits(xmlToSurveyUnits(sample.getFileName(), sample.getCampaign()));
+/*		Files.list(Path.of(System.getProperty("java.io.tmpdir"))).filter(p -> p.toString().contains("xml2json")).forEach((p) -> {
+			try {
+				logger.info(p.getFileName());
+				Files.deleteIfExists(p);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});*/
 		return sample;
 	}
 	
@@ -192,7 +202,7 @@ public class XmlUtils {
 				return;
 			}
 			Transformer transformer = TransformerFactory.newInstance().newTransformer();
-			transformer.transform(new DOMSource(questionnaireXml), new StreamResult(Files.createTempFile("tempQuestionnaire","xml").toFile()));
+			transformer.transform(new DOMSource(questionnaireXml), new StreamResult(Files.createTempFile("tempQuestionnaire",".xml").toFile()));
 			XMLLunaticToXSDData xmlLunaticToXSDData = new XMLLunaticToXSDData();
 			// Creating Data.xsd
 			questionnaireXml.setDocumentURI(Constants.TEMP_FOLDER +"/tempQuestionnaire.xml");
@@ -224,7 +234,7 @@ public class XmlUtils {
 				return;
 			}
 			Transformer transformer = TransformerFactory.newInstance().newTransformer();
-			transformer.transform(new DOMSource(questionnaireXml), new StreamResult(Files.createTempFile("tempQuestionnaire","xml").toFile()));
+			transformer.transform(new DOMSource(questionnaireXml), new StreamResult(Files.createTempFile("tempQuestionnaire",".xml").toFile()));
 			questionnaireXml.setDocumentURI(Constants.TEMP_FOLDER +"/tempQuestionnaire.xml");
 			SchemaValidator sv = new SchemaValidator(Modele.HIERARCHICAL);
 			File fileQuestionnaireXml = new File(questionnaireXml.getDocumentURI());
@@ -282,7 +292,7 @@ public class XmlUtils {
 		            if (node.getNodeType() == Node.ELEMENT_NODE) {
 		                Node copyNode = dataXml.importNode(node, true);
 		                dataXml.appendChild(copyNode);
-		                transformer.transform(new DOMSource(dataXml), new StreamResult(Files.createTempFile("tempData","xml").toFile()));
+		                transformer.transform(new DOMSource(dataXml), new StreamResult(Files.createTempFile("tempData",".xml").toFile()));
 
 		    			//Validation data
 		    			SchemaFactory factoryData = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -552,14 +562,28 @@ public class XmlUtils {
 			Document dataXml = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 			Transformer transformer = TransformerFactory.newInstance().newTransformer();
 			XMLLunaticDataToJSON xmlLunaticDataToJSON = new XMLLunaticDataToJSON();
-			File fileDataXml = Files.createTempFile("tempFileData","xml").toFile();
+			File fileDataXml = Files.createTempFile(Constants.TEMP_FOLDER,"tempFileData",".xml").toFile();
+			logger.info("creating file data in temp folder" + Constants.TEMP_FOLDER);
+			logger.info(fileDataXml.getAbsolutePath());
 			Node copyNode = dataXml.importNode(data, true);
 			dataXml.appendChild(copyNode);
 			transformer.transform(new DOMSource(dataXml), new StreamResult(fileDataXml));
-			String stringdata = xmlLunaticDataToJSON.transform(fileDataXml).toString();
+			File dataJson = xmlLunaticDataToJSON.transform(fileDataXml);
+			logger.info("transformedfile "+dataJson.getAbsolutePath());
+			String stringdata = dataJson.toString();
 			fileDataXml.delete();
 			JSONParser parser = new JSONParser();
-			return (JSONObject) parser.parse(new FileReader(stringdata));
+			JSONObject dataJsonObject = (JSONObject) parser.parse(new FileReader(stringdata));
+			try {
+
+				Files.delete(Paths.get(dataJson.getAbsolutePath()));
+			}
+			catch (IOException e) {
+
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return dataJsonObject;
 		}
 		return new JSONObject();		
 	}

@@ -563,17 +563,16 @@ public class XmlUtils {
 			Transformer transformer = TransformerFactory.newInstance().newTransformer();
 			XMLLunaticDataToJSON xmlLunaticDataToJSON = new XMLLunaticDataToJSON();
 			File fileDataXml = Files.createTempFile(Constants.TEMP_FOLDER,"tempFileData",".xml").toFile();
-			logger.info("creating file data in temp folder" + Constants.TEMP_FOLDER);
-			logger.info(fileDataXml.getAbsolutePath());
 			Node copyNode = dataXml.importNode(data, true);
 			dataXml.appendChild(copyNode);
 			transformer.transform(new DOMSource(dataXml), new StreamResult(fileDataXml));
 			File dataJson = xmlLunaticDataToJSON.transform(fileDataXml);
-			logger.info("transformedfile "+dataJson.getAbsolutePath());
 			String stringdata = dataJson.toString();
 			fileDataXml.delete();
 			JSONParser parser = new JSONParser();
-			JSONObject dataJsonObject = (JSONObject) parser.parse(new FileReader(stringdata));
+			FileReader dataFileReader = new FileReader(stringdata);
+			JSONObject dataJsonObject = (JSONObject) parser.parse(dataFileReader);
+			dataFileReader.close();
 			try {
 
 				Files.delete(Paths.get(dataJson.getAbsolutePath()));

@@ -490,22 +490,18 @@ public class XmlUtils {
             String stringdata = dataJson.toString();
 
             try {
-
                 Files.delete(Paths.get(fileDataXml.getAbsolutePath()));
             } catch (IOException e) {
                 logger.warn("Unable to delete tempFileData.xml temporary file :"+e.getMessage());
-
             }
             JSONParser parser = new JSONParser();
             FileReader dataFileReader = new FileReader(stringdata);
             JSONObject dataJsonObject = (JSONObject) parser.parse(dataFileReader);
             dataFileReader.close();
             try {
-
                 Files.delete(Paths.get(dataJson.getAbsolutePath()));
             } catch (IOException e) {
                 logger.warn("Unable to delete xml2json temporary file :"+e.getMessage());
-
             }
             return dataJsonObject;
         }
@@ -593,14 +589,7 @@ public class XmlUtils {
         sample.setFileName(fileName);
         sample.setCampaign(xmlToCampaign(sample.getFileName()));
         sample.setSurveyUnits(xmlToSurveyUnits(sample.getFileName(), sample.getCampaign()));
-/*		Files.list(Path.of(System.getProperty("java.io.tmpdir"))).filter(p -> p.toString().contains("xml2json")).forEach((p) -> {
-			try {
-				logger.info(p.getFileName());
-				Files.deleteIfExists(p);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});*/
+
         return sample;
     }
 
@@ -612,6 +601,7 @@ public class XmlUtils {
      * @throws Exception
      */
     public List<SurveyUnit> xmlToSurveyUnits(String fileName, Campaign campaign) throws Exception {
+        logger.info("Using {} as root temporary directory", System.getProperty("java.io.tmpdir"));
         List<SurveyUnit> surveyUnits = new ArrayList<>();
         List<String> surveyUnitsIds = new ArrayList<>();
         Set<QuestionnaireModel> questionnaireModels = new HashSet<>();

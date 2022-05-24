@@ -158,12 +158,10 @@ public class XmlUtils {
             validateData(xmlPath, transformer, xsdFile);
 
             try {
-
                 Files.delete(Paths.get(fileQuestionnaireXml.getAbsolutePath()));
             } catch (IOException e) {
+                logger.warn("Unable to delete tempQuestionnaire.xml temporary file :"+e.getMessage());
 
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
         } catch (Exception e) {
             throw new ValidateException("Error during validation of data : " + e.getMessage());

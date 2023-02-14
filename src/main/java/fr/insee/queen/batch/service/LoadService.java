@@ -28,7 +28,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.DOMException;
@@ -87,7 +87,7 @@ public class LoadService {
 	Environment env;
 	
 	@Autowired
-	AnnotationConfigApplicationContext context;
+	ApplicationContext context;
 	
 	@Autowired
 	XmlUtils xmlUtils;

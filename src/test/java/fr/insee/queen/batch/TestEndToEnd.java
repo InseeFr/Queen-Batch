@@ -33,7 +33,7 @@ import fr.insee.queen.batch.utils.PathUtils;
 @TestMethodOrder(OrderAnnotation.class)
 public abstract class TestEndToEnd {
 	
-	AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationContext.class);
+	org.springframework.context.ApplicationContext context = new AnnotationConfigApplicationContext(ApplicationContext.class);
 	LauncherService launcherService = context.getBean(LauncherService.class);
 	ExtractionService extractionService = context.getBean(ExtractionService.class);
 

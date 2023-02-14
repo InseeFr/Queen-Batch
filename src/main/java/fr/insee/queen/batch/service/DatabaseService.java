@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -31,7 +31,7 @@ import fr.insee.queen.batch.exception.DataBaseException;
 public class DatabaseService {
 	
 	@Autowired
-	AnnotationConfigApplicationContext context;
+	ApplicationContext context;
 	
 	@Autowired
 	Environment env;

@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
@@ -48,7 +49,7 @@ public class LauncherService {
 	private static final Logger logger = LogManager.getLogger(LauncherService.class);
 	
 	@Autowired
-	AnnotationConfigApplicationContext context;
+	ApplicationContext context;
 	
 	static FolderService folderService;
 	
@@ -159,7 +160,7 @@ public class LauncherService {
 		return false;
 	}
 	
-	public boolean validQuestionnaireModel(AnnotationConfigApplicationContext context, String fileName) throws ValidateException, IOException {
+	public boolean validQuestionnaireModel(ApplicationContext context, String fileName) throws ValidateException, IOException {
 		QuestionnaireModelDao questionaireModelDao = context.getBean(QuestionnaireModelDao.class);
 		NodeList lstQuestionnaireModel = XmlUtils.getXmlNodeFile(fileName, "QuestionnaireModelId");
 		if (lstQuestionnaireModel != null) {

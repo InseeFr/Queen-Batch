@@ -26,7 +26,7 @@ public class TestEndToEndJpa extends TestEndToEnd {
 	
 	private static final Logger logger = LogManager.getLogger(TestEndToEndJpa.class);
 	
-	AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationContext.class);
+	org.springframework.context.ApplicationContext context = new AnnotationConfigApplicationContext(ApplicationContext.class);
 		
 	DatasetService datasetService = context.getBean(DatasetService.class);
 	

@@ -6,10 +6,10 @@ import java.util.UUID;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
 
-import fr.insee.queen.batch.config.ApplicationContext;
 import fr.insee.queen.batch.dao.CampaignDao;
 import fr.insee.queen.batch.dao.DataDao;
 import fr.insee.queen.batch.dao.NomenclatureDao;
@@ -30,7 +30,7 @@ import fr.insee.queen.batch.object.SurveyUnit;
 public class DatasetService {
 	
 	@Autowired
-	AnnotationConfigApplicationContext context;
+	ApplicationContext context;
 	/**
 	 * This method initialize the data for testing
 	 * 
@@ -39,7 +39,7 @@ public class DatasetService {
 	@SuppressWarnings("unchecked")
 	public void createDataSet() throws Exception {
 		// Datasource initialization
-		context = new AnnotationConfigApplicationContext(ApplicationContext.class);
+		context = new AnnotationConfigApplicationContext(fr.insee.queen.batch.config.ApplicationContext.class);
 		NomenclatureDao nomenclatureDao = context.getBean(NomenclatureDao.class);
 		QuestionnaireModelDao questionnaireModelDao = context.getBean(QuestionnaireModelDao.class);
 		CampaignDao campaignDao = context.getBean(CampaignDao.class);

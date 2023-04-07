@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.xml.sax.SAXException;
 
 import fr.insee.queen.batch.config.ApplicationContext;
@@ -48,7 +49,7 @@ public abstract class Launcher {
 	*/
 	public static String FOLDER_OUT;
 	
-	static AnnotationConfigApplicationContext context;
+	static org.springframework.context.ApplicationContext context;
 
 	static DatabaseService databaseService;
 	static FolderService folderService;
@@ -82,7 +83,7 @@ public abstract class Launcher {
 			batchErrorCode = BatchErrorCode.KO_FONCTIONAL_ERROR;
 			logger.log(Level.ERROR, Constants.MSG_RETURN_CODE, batchErrorCode);
 		} finally {
-			context.close();
+			((AbstractApplicationContext) context).close();
 			System.exit(batchErrorCode.getCode());
 		}
 	}

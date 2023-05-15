@@ -99,7 +99,8 @@ public class ExtractionService {
 				extractCampaign(batchOption, c, List.of(), out);
 				lstCampaignSuccess.add(c.getId());
 			}catch(Exception e) {
-				logger.log(Level.WARN, "Error occured durring extraction of campaign {}", c.getId());
+				logger.log(Level.WARN, "Error occured during extraction of campaign {}", c.getId());
+				logger.log(Level.WARN, "Error message : {}", e.getMessage());
 				lstCampaignError.add(c.getId());
 			}
 		}
@@ -161,6 +162,7 @@ public class ExtractionService {
 			outter.output(doc, fileWriter);
 			logger.log(Level.INFO, "campaign {} extracted succefully in file {}", c.getId(), fileName);
 		} catch (Exception e) {
+			logger.log(Level.WARN, "Error message : {}", e.getMessage());
 			throw new BatchException(String.format("Error during extract campaign %s", c.getId()));
 		}
 	}
@@ -208,6 +210,7 @@ public class ExtractionService {
 			}
 			lstSu.stream().forEach(id -> stateDataDao.updateSurveyUnitStateById(id, "EXTRACTED"));
 		} catch (Exception e) {
+			logger.log(Level.WARN, "Error message : {}", e.getMessage());
 			if(databaseService.isJpaDatabase()) {
 				connection.rollback();
 				connection.setAutoCommit(true);

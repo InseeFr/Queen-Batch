@@ -46,10 +46,7 @@ public class ParadataEventDaoJpaImpl implements ParadataEventDao{
 		JSONParser parser = new JSONParser();
 		JSONArray array = new JSONArray();
 		List<String> value = new ArrayList<>();
-		StringBuilder qString = new StringBuilder("SELECT value FROM paradata_event WHERE EXISTS ( select 1 ")
-				.append("from jsonb_each_text(value) as t(")
-				.append(databaseService.getKeyParadataIdSu())
-				.append(",v) where v ilike ?)");
+		StringBuilder qString = new StringBuilder("SELECT value FROM paradata_event WHERE idsu = ?");
 		value =  jdbcTemplate.queryForList(qString.toString(), new Object[]{suId}, String.class);
 		for(String val : value) {
 			JSONObject jsonObjectTemp = (JSONObject) parser.parse(val);
@@ -60,9 +57,16 @@ public class ParadataEventDaoJpaImpl implements ParadataEventDao{
 		jsobObjectClean.put("events", array);
 		return jsobObjectClean;
 	}
-	
+
+	@Override
+	public int deleteParadatas(String idsu) throws SQLException {
+
+		StringBuilder qString = new StringBuilder("DELETE FROM paradata_event WHERE idsu = ?");
+		return jdbcTemplate.update(qString.toString(),new Object[]{idsu});
+	}
+
 	/**
-	 * This method create a paradata_event, only use for for testing in the creation of the dataset 
+	 * This method create a paradata_event, only use for testing in the creation of the dataset
 	 */
 	public void createParadata(JSONObject paradata) throws SQLException {
 		StringBuilder qString = new StringBuilder("INSERT INTO paradata_event (id, value) VALUES (?, ?)");

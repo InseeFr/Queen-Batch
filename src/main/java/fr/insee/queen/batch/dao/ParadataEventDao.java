@@ -24,4 +24,6 @@ public interface ParadataEventDao {
 	 * @throws ParseException 
 	 */
 	JSONObject findBySurveyUnitId(String suId) throws ParseException;
+
+	int deleteParadatas(String idsu) throws SQLException;
 }

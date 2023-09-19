@@ -1,10 +1,8 @@
 package fr.insee.queen.batch.dao.mongo.impl;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
+import fr.insee.queen.batch.config.ConditonMongo;
+import fr.insee.queen.batch.dao.ParadataEventDao;
+import fr.insee.queen.batch.service.DatabaseService;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -16,9 +14,10 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import fr.insee.queen.batch.config.ConditonMongo;
-import fr.insee.queen.batch.dao.ParadataEventDao;
-import fr.insee.queen.batch.service.DatabaseService;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Service for the Paradata-Event entity that implements the interface associated
@@ -63,8 +62,15 @@ public class ParadataEventDaoMongoImpl implements ParadataEventDao {
     }
 
     @Override
-    public int deleteParadatas(String idsu) throws SQLException {
-        return 0;
+    public void deleteParadataById(String id) throws SQLException {
+        ParadataEvent paradataEvent =  findById(id);
+        mongoTemplate.remove(paradataEvent, "paradata_event");
+    }
+
+    public ParadataEvent findById(String id) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("id").is(id));
+        return mongoTemplate.findOne(query, ParadataEvent.class, "paradata_event");
     }
 
     /**

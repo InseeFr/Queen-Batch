@@ -48,8 +48,8 @@ public class ParadataEventDaoJpaImpl implements ParadataEventDao{
 		JSONParser parser = new JSONParser();
 		JSONArray array = new JSONArray();
 		JSONArray arrayIds = new JSONArray();
-		StringBuilder qString = new StringBuilder("SELECT * FROM paradata_event WHERE value->>'" +
-				this.databaseService.getKeyParadataIdSu()+"' =  ? ");
+		StringBuilder qString = new StringBuilder("SELECT * FROM paradata_event WHERE value->>'").append(
+				this.databaseService.getKeyParadataIdSu()).append("' =  ? ");
 		List<ParadataEvent> listParadatas =  jdbcTemplate.query(qString.toString(),new ParadataMapper(), new Object[]{suId});
 		for(ParadataEvent paradata : listParadatas) {
 			JSONObject jsonObjectTemp = (JSONObject) parser.parse(paradata.getValue());

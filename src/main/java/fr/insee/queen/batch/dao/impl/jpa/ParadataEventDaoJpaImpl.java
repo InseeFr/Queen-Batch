@@ -50,10 +50,11 @@ public class ParadataEventDaoJpaImpl implements ParadataEventDao{
 		JSONArray arrayIds = new JSONArray();
 		StringBuilder qString = new StringBuilder("SELECT * FROM paradata_event WHERE value->>'").append(
 				this.databaseService.getKeyParadataIdSu()).append("' =  ? ");
+		String paradataKey = databaseService.getKeyParadataEvents();
 		List<ParadataEvent> listParadatas =  jdbcTemplate.query(qString.toString(),new ParadataMapper(), new Object[]{suId});
 		for(ParadataEvent paradata : listParadatas) {
 			JSONObject jsonObjectTemp = (JSONObject) parser.parse(paradata.getValue());
-			array.add(jsonObjectTemp.get(databaseService.getKeyParadataEvents()));
+			array.add(jsonObjectTemp.get(paradataKey));
 			JSONObject item = new JSONObject();
 			item.put("id",paradata.getId());
 			arrayIds.add(item);
@@ -79,8 +80,8 @@ public class ParadataEventDaoJpaImpl implements ParadataEventDao{
 	@Override
 	public void deleteParadataById(String id) throws SQLException {
 
-		StringBuilder qString = new StringBuilder("DELETE FROM paradata_event WHERE id = ?::uuid");
-		jdbcTemplate.update(qString.toString(),new Object[]{id});
+		String stringDelete = "DELETE FROM paradata_event WHERE id = ?::uuid";
+		jdbcTemplate.update(stringDelete,new Object[]{id});
 	}
 
 

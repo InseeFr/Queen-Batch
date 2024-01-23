@@ -204,7 +204,9 @@ public class ExtractionService {
 					new File(fileName.toString()).delete();
 				}
 				FileWriter fileWriter = new FileWriter(fileName.toString(), true);
-				fileWriter.write(gson.toJson(JsonParser.parseString(paradataEventDao.findBySurveyUnitId(id).toJSONString())));
+				JSONObject paradatas = paradataEventDao.findBySurveyUnitId(id);
+				paradatas.remove("ids");
+				fileWriter.write(gson.toJson(JsonParser.parseString(paradatas.toJSONString())));
 				fileWriter.flush();
 				fileWriter.close();
 			}

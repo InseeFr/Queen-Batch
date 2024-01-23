@@ -2,6 +2,7 @@ package fr.insee.queen.batch.dao.mongo.impl;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -58,16 +59,18 @@ public class DataDaoMongoImpl implements DataDao {
 	 * Delete all the data for a list of SU
 	 */
 	@Override
-	public void deleteDataBySurveyUnitIds(List<String> lstSu) {
+	public int deleteDataBySurveyUnitIds(List<String> lstSu) {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("id").in(lstSu));
 		List<SurveyUnit> suList = mongoTemplate.find(query, SurveyUnit.class, "survey_unit");
+		AtomicInteger nb= new AtomicInteger();
 		suList.stream().forEach(su -> {
 			if(su != null && su.getData() != null) {
 				mongoTemplate.remove(su.getData(), Constants.DATA);
+				nb.getAndIncrement();
 			}
 		});
-		
+		return nb.get();
 	}
 
 	/**

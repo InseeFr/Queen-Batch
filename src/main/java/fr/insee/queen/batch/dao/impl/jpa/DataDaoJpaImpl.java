@@ -61,14 +61,14 @@ public class DataDaoJpaImpl implements DataDao {
 	 * Delete all data for a list of SU
 	 */
 	@Override
-	public void deleteDataBySurveyUnitIds(List<String> lstSu) {
+	public int deleteDataBySurveyUnitIds(List<String> lstSu) {
 		String values = lstSu.stream().map(id->"?").collect(Collectors.joining(","));
 		StringBuilder qStringBuilder = new StringBuilder("DELETE FROM data AS d ")
 		.append("USING survey_unit AS su ")
 		.append("WHERE su.id = d.survey_unit_id ")
 		.append("AND su.id IN (%s)");
 		String qString = String.format(qStringBuilder.toString(), values);
-		jdbcTemplate.update(qString, lstSu.toArray());
+		return jdbcTemplate.update(qString, lstSu.toArray());
 	}
 
 	/**

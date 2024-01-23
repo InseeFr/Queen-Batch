@@ -40,7 +40,7 @@ public interface DataDao {
 	 * Delete data by a list of SU
 	 * @param lstSu
 	 */
-	void deleteDataBySurveyUnitIds(List<String> lstSu);
+	int deleteDataBySurveyUnitIds(List<String> lstSu);
 
 	/**
 	 * Delete data by a campaign Id

@@ -73,6 +73,11 @@ public class DataDaoMongoImpl implements DataDao {
 		return nb.get();
 	}
 
+	@Override
+	public int setDataToEmptyBySurveyUnitIds(List<String> lstSu) {
+		return 0;
+	}
+
 	/**
 	 * Delete the data for a Campaign id
 	 */

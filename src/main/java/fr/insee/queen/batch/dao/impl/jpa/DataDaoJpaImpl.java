@@ -71,6 +71,15 @@ public class DataDaoJpaImpl implements DataDao {
 		return jdbcTemplate.update(qString, lstSu.toArray());
 	}
 
+	@Override
+	public int setDataToEmptyBySurveyUnitIds(List<String> lstSu) {
+		String values = lstSu.stream().map(id->"?").collect(Collectors.joining(","));
+		StringBuilder qStringBuilder = new StringBuilder("UPDATE data SET value='{}'::jsonb ")
+				.append("WHERE survey_unit_id in (%s)");
+		String qString = String.format(qStringBuilder.toString(), values);
+		return jdbcTemplate.update(qString, lstSu.toArray());
+	}
+
 	/**
 	 * Delete data for a campaign
 	 */

@@ -90,9 +90,8 @@ public class DeleteService {
 		if(!campaignDao.exist(sample.getCampaign().getId())) {
 			throw new BatchException(String.format("Campaign %s does not exist in database", sample.getCampaign().getId()));			
 		}
-		if(databaseService.isJpaDatabase()) {
-			connection.setAutoCommit(false);
-		}
+		connection.setAutoCommit(false);
+
 		if(sample.getSurveyUnits() ==null || sample.getSurveyUnits().isEmpty()) {
 			try {
 				// Delete Campaign
@@ -109,15 +108,11 @@ public class DeleteService {
 				logger.log(Level.WARN, "Following survey-units deleted successfully : [{}]", String.join(",", lstSu));
 				logger.log(Level.WARN, "Campaign {} deleted successfully", sample.getCampaign().getId());
 			} catch (Exception e) {
-				if(databaseService.isJpaDatabase()) {
-					connection.rollback();
-					connection.setAutoCommit(true);
-				}
+				connection.rollback();
+				connection.setAutoCommit(true);
 				throw new DataBaseException("Error during delete campaign in DB ... Rollback : " + e.getMessage());
 			} finally {
-				if(databaseService.isJpaDatabase()) {
-					connection.setAutoCommit(true);
-				}
+				connection.setAutoCommit(true);
 			}
 		}else {
 			// Delete SU
@@ -140,15 +135,11 @@ public class DeleteService {
 					returnCode = BatchErrorCode.OK_FONCTIONAL_WARNING;
 				}
 			} catch (Exception e) {
-				if(databaseService.isJpaDatabase()) {
-					connection.rollback();
-					connection.setAutoCommit(true);
-				}
+				connection.rollback();
+				connection.setAutoCommit(true);
 				throw new DataBaseException("Error during delete survey-units in DB ... Rollback : " + e.getMessage());
 			} finally {
-				if(databaseService.isJpaDatabase()) {
-					connection.setAutoCommit(true);
-				}
+				connection.setAutoCommit(true);
 			}
 			
 		}
@@ -158,10 +149,9 @@ public class DeleteService {
 	public BatchErrorCode deleteNomenclature(String pathToNomenclature,
 		String pathToJson, BatchErrorCode returnCode) throws BatchException, SQLException, DataBaseException {
 		List<Nomenclature> lstNomenclature;
-		if(databaseService.isJpaDatabase()) {
-			requiredNomenclatureDao = context.getBean(RequiredNomenclatureDao.class);
-			connection.setAutoCommit(false);
-		}
+		requiredNomenclatureDao = context.getBean(RequiredNomenclatureDao.class);
+		connection.setAutoCommit(false);
+
 		try {
 			lstNomenclature = XmlUtils.xmlToNomenclature(false, pathToNomenclature, pathToJson);
 		
@@ -175,15 +165,11 @@ public class DeleteService {
 				logger.log(Level.INFO, "Nomenclature {} succesfully deleted", nomenclature.getId());
 			}
 		} catch (Exception e) {
-			if(databaseService.isJpaDatabase()) {
-				connection.rollback();
-				connection.setAutoCommit(true);
-			}
+			connection.rollback();
+			connection.setAutoCommit(true);
 			throw new DataBaseException("Error during delete nomenclatures in DB ... Rollback : " + e.getMessage());
 		} finally {
-			if(databaseService.isJpaDatabase()) {
-				connection.setAutoCommit(true);
-			}
+			connection.setAutoCommit(true);
 		}
 		return returnCode;
 	}

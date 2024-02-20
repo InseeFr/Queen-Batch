@@ -7,12 +7,10 @@ import java.util.List;
 import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-import fr.insee.queen.batch.config.ConditonJpa;
 import fr.insee.queen.batch.dao.NomenclatureDao;
 import fr.insee.queen.batch.object.Nomenclature;
 
@@ -22,7 +20,6 @@ import fr.insee.queen.batch.object.Nomenclature;
  *
  */
 @Service
-@Conditional(value= ConditonJpa.class)
 public class NomenclatureDaoJpaImpl implements NomenclatureDao {
 	
 	@Autowired

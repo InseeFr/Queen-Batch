@@ -6,14 +6,11 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import fr.insee.queen.batch.config.ConditonJpa;
 import fr.insee.queen.batch.dao.StateDataDao;
 import fr.insee.queen.batch.object.StateData;
-import fr.insee.queen.batch.utils.PathUtils;
 
 /**
  * Service for the StateData entity that implements the interface associated
@@ -21,7 +18,6 @@ import fr.insee.queen.batch.utils.PathUtils;
  *
  */
 @Service
-@Conditional(value= ConditonJpa.class)
 public class StateDataDaoJpaImpl implements StateDataDao{
 
 	@Autowired

@@ -10,12 +10,10 @@ import fr.insee.queen.batch.object.QuestionnaireModel;
 import fr.insee.queen.batch.object.StateData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-import fr.insee.queen.batch.config.ConditonJpa;
 import fr.insee.queen.batch.dao.SurveyUnitDao;
 import fr.insee.queen.batch.object.SurveyUnit;
 
@@ -25,7 +23,6 @@ import fr.insee.queen.batch.object.SurveyUnit;
  *
  */
 @Service
-@Conditional(value= ConditonJpa.class)
 public class SurveyUnitDaoJpaImpl implements SurveyUnitDao {
 	
 	@Autowired

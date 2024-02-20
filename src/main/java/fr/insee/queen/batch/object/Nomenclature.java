@@ -1,7 +1,6 @@
 package fr.insee.queen.batch.object;
 
 import org.json.simple.JSONArray;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Entity Nomenclature : represent the entity table in DB
@@ -9,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * @author Claudel Benjamin
  * 
  */
-@Document(collection="nomenclature")
 public class Nomenclature {
 
 	private String id;

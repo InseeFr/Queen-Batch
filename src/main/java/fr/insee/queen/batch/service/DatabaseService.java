@@ -13,13 +13,9 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
-import fr.insee.queen.batch.config.ConditonJpa;
-import fr.insee.queen.batch.config.ConditonMongo;
 import fr.insee.queen.batch.exception.DataBaseException;
 
 /**
@@ -36,12 +32,9 @@ public class DatabaseService {
 	@Autowired
 	Environment env;
 	
-	@Autowired(required=false)
+	@Autowired
 	@Qualifier("dataSource")
 	DataSource dataSource;
-	
-	@Autowired(required=false)
-	MongoTemplate mongoTemplate;
 	
 	@Autowired
 	String getKeyParadataIdSu;
@@ -59,19 +52,14 @@ public class DatabaseService {
 	 * @throws SQLException
 	 */
 	public void checkDatabaseAccess() throws DataBaseException, SQLException {
-		if(dataSource != null) {
-			checkDatabaseAccessJpa();
-		} else {
-			checkDatabaseAccessMongo();
-		}
+		checkDatabaseAccessJpa();
 	}
-	
+
 	/**
 	 * Check if the tables all exists
 	 * @throws DataBaseException
 	 * @throws SQLException
 	 */
-	@Conditional(value= ConditonJpa.class)
 	public void checkDatabaseAccessJpa() throws DataBaseException, SQLException {
 		Connection connection = null;
 		ResultSet rs = null;
@@ -97,29 +85,11 @@ public class DatabaseService {
 	}
 	
 	/**
-	 * Check if the collections all exists
-	 * @throws DataBaseException
-	 * @throws SQLException
-	 */
-	@Conditional(value= ConditonMongo.class)
-	public void checkDatabaseAccessMongo() throws DataBaseException, SQLException {
-		Set<String> collectionsNames = mongoTemplate.getCollectionNames();
-		for (String tableName : lstTable) {
-			if (!collectionsNames.contains(tableName)) {
-				missingTable.add(tableName);
-			}	
-		}
-		if (!missingTable.isEmpty()) {
-			throw new DataBaseException(String.format("Missing tables in database : [%s]", String.join(",", missingTable)));
-		}
-	}
-	
-	/**
 	 * This method return true if the persistence type is JPA
 	 * @return
 	 */
 	public boolean isJpaDatabase() {
-		return "JPA".equals(env.getProperty("fr.insee.queen.application.persistenceType"));
+		return true;
 	}
 	
 	/**

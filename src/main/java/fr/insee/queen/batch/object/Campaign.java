@@ -2,16 +2,12 @@ package fr.insee.queen.batch.object;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
-
 /**
 * Object XmlCampaign : represent the campaign in XML file
 * 
 * @author Claudel Benjamin
 * 
 */
-@Document(collection="campaign")
 public class Campaign {
 	/**
 	* The id of campaign 
@@ -25,7 +21,6 @@ public class Campaign {
 	/**
 	* The list of survey unit associated to campaign
 	*/
-	@DBRef
 	private List<QuestionnaireModel> questionnaireModels;
 	
 	/**

@@ -1,21 +1,17 @@
 package fr.insee.queen.batch.object;
 
+import jakarta.persistence.Column;
+import org.springframework.data.annotation.Id;
+
 import java.util.UUID;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
 
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-@Document(collection="state_data")
 public class StateData {
 
 	/**
 	 * The id of the state data
 	 */
 	@Id
-	@org.springframework.data.annotation.Id
 	@Column(name = "id")
     protected UUID id;
 	
@@ -40,7 +36,6 @@ public class StateData {
 	/**
 	* The SurveyUnit associated to the StateData
 	*/
-	@DBRef
 	private SurveyUnit surveyUnit;
 
 	/**

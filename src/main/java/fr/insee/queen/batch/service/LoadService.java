@@ -110,9 +110,8 @@ public class LoadService {
 	 */
 	public BatchErrorCode loadNomenclature(String pathToNomenclature,
 			String pathToJson, BatchErrorCode returnCode) throws BatchException, SQLException, DataBaseException {
-		if(databaseService.isJpaDatabase()) {
-			connection.setAutoCommit(false);
-		}
+		connection.setAutoCommit(false);
+
 		NomenclatureDao nomenclatureDao = context.getBean(NomenclatureDao.class);
 		List<Nomenclature> lstNomenclature;
 		try {
@@ -131,15 +130,12 @@ public class LoadService {
 				}
 			}
 		} catch (Exception e) {
-			if(databaseService.isJpaDatabase()) {
-				connection.rollback();
-				connection.setAutoCommit(true);
-			}
+			connection.rollback();
+			connection.setAutoCommit(true);
+
 			throw new DataBaseException("Error during create or update nomenclature in DB ... Rollback : " + e.getMessage());
 		} finally {
-			if(databaseService.isJpaDatabase()) {
-				connection.setAutoCommit(true);
-			}
+			connection.setAutoCommit(true);
 		}
 		if (returnCode == BatchErrorCode.OK) {
 			logger.info("Success to load nomenclatures.xml");
@@ -157,9 +153,8 @@ public class LoadService {
 	 * @throws DataBaseException 
 	 */
 	public BatchErrorCode loadSample(String pathSampleIn, String pathSampleOut, BatchErrorCode returnCode) throws BatchException, SQLException {
-		if(databaseService.isJpaDatabase()) {
-			connection.setAutoCommit(false);
-		}
+		connection.setAutoCommit(false);
+
 		try {
 			questionnaireModelDao = context.getBean(QuestionnaireModelDao.class);
 			campaignDao = context.getBean(CampaignDao.class);
@@ -167,8 +162,7 @@ public class LoadService {
 			dataDao = context.getBean(DataDao.class);
 			commentDao = context.getBean(CommentDao.class);
 			personalizationDao = context.getBean(PersonalizationDao.class);
-			if(databaseService.isJpaDatabase())
-				requiredNomenclatureDao = context.getBean(RequiredNomenclatureDao.class);
+			requiredNomenclatureDao = context.getBean(RequiredNomenclatureDao.class);
 			// Retrieve complete xml Objects
 			Sample sample = xmlUtils.createSample(pathSampleIn);
 			returnCode = createOrUpdateCampaign(sample, pathSampleOut, returnCode);
@@ -186,9 +180,8 @@ public class LoadService {
 			// Forcing uppercase
 			sample.getCampaign().setId(sample.getCampaign().getId().toUpperCase());
 			
-			if(databaseService.isJpaDatabase()) {
-				connection.setAutoCommit(false);
-			} 
+			connection.setAutoCommit(false);
+
 			if (campaignDao.exist(sample.getCampaign().getId())) {
 				logger.log(Level.INFO, "Campaign {} already exist in database", sample.getCampaign().getId());
 				returnCode = BatchErrorCode.OK_FONCTIONAL_WARNING;
@@ -202,15 +195,11 @@ public class LoadService {
 			}
 			returnCode = createOrUpdateSurveyUnit(sample, pathSampleOut+"sample", returnCode);
 		} catch (Exception e) {
-			if(databaseService.isJpaDatabase()) {
-				connection.rollback();
-				connection.setAutoCommit(true);
-			}
+			connection.rollback();
+			connection.setAutoCommit(true);
 			throw new DataBaseException("Error during create or update campaign in DB ... Rollback : " + e.getMessage());
 		} finally {
-			if(databaseService.isJpaDatabase()) {
-				connection.setAutoCommit(true);
-			}
+			connection.setAutoCommit(true);
 		}
 		return returnCode;
 	}

@@ -5,12 +5,7 @@ Batch using to implement QUEEN DB from xml files.
 ## Requirements
 For building and running the application you need:
 - JDK 21
-- Maven 3 
-
-# Add lunatic librairy to project
-``` shell
-mvn install:install-file -Dfile=lib/lunatic-model-2.5.1.jar -DgroupId=fr.insee.lunatic -DartifactId=lunatic-model -Dversion=2.5.1 -Dpackaging=jar
-```
+- Maven 3
 
 ## Install and excute unit tests and ent-to-end tests
 Use the maven clean and maven install  

@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -214,6 +215,8 @@ public class LoadService {
 		Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
 		InputSource is = new InputSource(reader);
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+		dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 	    DocumentBuilder db = dbf.newDocumentBuilder();
 	    Document doc = db.parse(is);
 	    StreamResult sr = null;

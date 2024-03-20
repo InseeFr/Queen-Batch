@@ -10,19 +10,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
-
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 
 @Configuration
 @ComponentScan("fr.insee.queen.batch.*")
@@ -72,7 +65,6 @@ public class ApplicationContext {
 	 * @return new Datasource
 	 */
 	@Bean("dataSource")
-	@Conditional(value= ConditonJpa.class)
 	public DataSource dataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		dataSource.setDriverClassName(dbDriver);
@@ -89,7 +81,6 @@ public class ApplicationContext {
 	 * @throws SQLException 
 	 */
 	@Bean("connection")
-	@Conditional(value= ConditonJpa.class)
 	public Connection connection(@Autowired @Qualifier("dataSource") DataSource dataSource) throws SQLException {
 		return DataSourceUtils.getConnection(dataSource);
 	}
@@ -100,7 +91,6 @@ public class ApplicationContext {
 	 * @return JdbcTemplate
 	 */
 	@Bean("jdbcTemplate")
-	@Conditional(value= ConditonJpa.class)
 	public JdbcTemplate jdbcTemplate(@Autowired @Qualifier("dataSource") DataSource dataSource) {
 		JdbcTemplate jdbcTemplate = null;
 		try {
@@ -111,32 +101,7 @@ public class ApplicationContext {
 		jdbcTemplate.setResultsMapCaseInsensitive(true);
 		return jdbcTemplate;
 	}
-	
-	/**
-	 * Method used to create the connection with the mongo database
-	 * @return
-	 */
-	@Bean
-	@Conditional(value= ConditonMongo.class)
-    public MongoClient mongo() {
-        ConnectionString connectionString = new ConnectionString(String.format("mongodb://%s:%s/%s", dbHost, dbPort, dbSchema));
-        		MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
-          .applyConnectionString(connectionString)
-          .build();
-        return MongoClients.create(mongoClientSettings);
-    }
-	
-	/**
-	 * Method used to create the mongoTemplate
-	 * @return
-	 * @throws Exception
-	 */
-	@Conditional(value= ConditonMongo.class)
-    @Bean
-    public MongoTemplate mongoTemplate() throws Exception {
-        return new MongoTemplate(mongo(), dbSchema);
-    }
-	
+
 	/**
 	 * Bean to get the Folder_in value
 	 * @return

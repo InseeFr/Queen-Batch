@@ -8,12 +8,10 @@ import org.json.simple.JSONObject;
 import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-import fr.insee.queen.batch.config.ConditonJpa;
 import fr.insee.queen.batch.dao.QuestionnaireModelDao;
 import fr.insee.queen.batch.object.QuestionnaireModel;
 
@@ -23,7 +21,6 @@ import fr.insee.queen.batch.object.QuestionnaireModel;
  *
  */
 @Service
-@Conditional(value= ConditonJpa.class)
 public class QuestionnaireModelDaoJpaImpl implements QuestionnaireModelDao{
 	
 	@Autowired

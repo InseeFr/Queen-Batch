@@ -1,8 +1,5 @@
 package fr.insee.queen.batch.utils;
 
-import fr.insee.lunatic.conversion.JSONCleaner;
-import fr.insee.lunatic.conversion.XMLLunaticFlatToJSONLunaticFlatTranslator;
-import fr.insee.lunatic.conversion.XMLLunaticToXMLLunaticFlatTranslator;
 import fr.insee.lunatic.conversion.data.XMLLunaticDataToJSON;
 import fr.insee.lunatic.conversion.data.XMLLunaticToXSDData;
 import fr.insee.lunatic.utils.Modele;
@@ -13,7 +10,6 @@ import fr.insee.queen.batch.exception.BatchException;
 import fr.insee.queen.batch.exception.ValidateException;
 import fr.insee.queen.batch.object.Comment;
 import fr.insee.queen.batch.object.*;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,19 +63,16 @@ public class XmlUtils {
      * @throws IOException
      */
     public static NodeList getXmlNodeFile(String filename, String nodeName) throws IOException {
-        FileInputStream fis = null;
-        try {
+        try(FileInputStream fis = new FileInputStream(filename)) {
             // an instance of factory that gives a document builder
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // Compliant
             dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // compliant
             DocumentBuilder db = dbf.newDocumentBuilder();
-            fis = new FileInputStream(new File(filename));
             Document doc = db.parse(fis);
             doc.getDocumentElement().normalize();
             return doc.getElementsByTagName(nodeName);
         } catch (Exception e) {
-            if (fis != null) fis.close();
             logger.log(Level.ERROR, e.getMessage(), e);
             return null;
         }
@@ -96,20 +89,17 @@ public class XmlUtils {
      * @throws BatchException
      */
     public static boolean validateXMLSchema(URL model, String xmlPath) throws ValidateException, IOException, XMLStreamException {
-        FileInputStream fis = null;
         XMLStreamReader xmlEncoding = null;
-        FileReader fr = null;
         ValidateException ve = null;
-        try {
+        try(FileInputStream fis = new FileInputStream(xmlPath);
+            FileReader fr = new FileReader(xmlPath)) {
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = factory.newSchema(model);
             factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
             factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+            Schema schema = factory.newSchema(model);
             Validator validator = schema.newValidator();
             validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
             validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-            fis = new FileInputStream(new File(xmlPath));
-            fr = new FileReader(xmlPath);
             xmlEncoding = XMLInputFactory.newInstance().createXMLStreamReader(fr);
             if (xmlEncoding.getCharacterEncodingScheme().equals("UTF8") || xmlEncoding.getCharacterEncodingScheme().equals(StandardCharsets.UTF_8.toString())) {
                 validator.validate(new StreamSource(fis));
@@ -121,11 +111,13 @@ public class XmlUtils {
         } catch (Exception e) {
             ve = new ValidateException("Error during validation : " + e.getMessage());
         } finally {
-            if (fis != null) fis.close();
-            if (fr != null) fr.close();
-            if (xmlEncoding != null) xmlEncoding.close();
+            if (xmlEncoding != null) {
+                xmlEncoding.close();
+            }
         }
-        if (ve != null) throw ve;
+        if (ve != null) {
+            throw ve;
+        }
         logger.log(Level.INFO, "{} validate with {}", xmlPath, model);
         return true;
     }
@@ -146,7 +138,7 @@ public class XmlUtils {
             if (!questionnaireXml.hasChildNodes()) {
                 return;
             }
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            Transformer transformer = getTransformer();
             transformer.transform(new DOMSource(questionnaireXml), new StreamResult(Files.createTempFile("tempQuestionnaire", ".xml").toFile()));
             XMLLunaticToXSDData xmlLunaticToXSDData = new XMLLunaticToXSDData();
             // Creating Data.xsd
@@ -185,7 +177,7 @@ public class XmlUtils {
                 logger.log(Level.INFO, "No questionnaire tag to validate");
                 return;
             }
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            Transformer transformer = getTransformer();
             transformer.transform(new DOMSource(questionnaireXml), new StreamResult(Files.createTempFile("tempQuestionnaire", ".xml").toFile()));
             questionnaireXml.setDocumentURI(Constants.TEMP_FOLDER + "/tempQuestionnaire.xml");
             SchemaValidator sv = new SchemaValidator(Modele.HIERARCHICAL);
@@ -346,54 +338,6 @@ public class XmlUtils {
     }
 
     /**
-     * get questionnaire model in xml file
-     *
-     * @param fileName the file name
-     * @return questionnaire model
-     * @throws IOException
-     */
-    public static QuestionnaireModel xmlToQuestionnaireModel(String fileName) throws IOException {
-        QuestionnaireModel questionnaireModel = null;
-        NodeList lstNodeQuestionnaireModel = getXmlNodeFile(fileName, "QuestionnaireModelId");
-        if (lstNodeQuestionnaireModel != null && lstNodeQuestionnaireModel.getLength() == 1) {
-            for (int itr = 0; itr < lstNodeQuestionnaireModel.getLength(); itr++) {
-                Node nodeQuestionnaireModel = lstNodeQuestionnaireModel.item(itr);
-                if (nodeQuestionnaireModel.getNodeType() == Node.ELEMENT_NODE) {
-                    Element e = (Element) nodeQuestionnaireModel;
-                    questionnaireModel = new QuestionnaireModel();
-                    questionnaireModel.setId(e.getElementsByTagName("Id").item(0).getTextContent());
-                    questionnaireModel.setLabel(e.getElementsByTagName("Label").item(0).getTextContent());
-                }
-            }
-        } else {
-            logger.log(Level.ERROR, "Log error => morethan one questionnaire model in file");
-        }
-        return questionnaireModel;
-    }
-
-    /**
-     * get nomenclature in xml file
-     *
-     * @param fileName the file name
-     * @return nomenclature
-     * @throws IOException
-     */
-    public static List<String> xmlToNomenclatures(String fileName) throws IOException {
-        List<String> nomenclatures = new ArrayList<>();
-        NodeList lstNodeNomenclature = getXmlNodeFile(fileName, "NomenclatureId");
-        if (lstNodeNomenclature != null) {
-            for (int itr = 0; itr < lstNodeNomenclature.getLength(); itr++) {
-                Node nodeQuestionnaireModel = lstNodeNomenclature.item(itr);
-                if (nodeQuestionnaireModel.getNodeType() == Node.ELEMENT_NODE) {
-                    Element e = (Element) nodeQuestionnaireModel;
-                    nomenclatures.add(e.getTextContent());
-                }
-            }
-        }
-        return nomenclatures;
-    }
-
-    /**
      * get nomenclature in xml file
      *
      * @param fileName the file name
@@ -418,37 +362,6 @@ public class XmlUtils {
             return new Personalization(UUID.randomUUID(), jsonArray, null);
         }
         return null;
-    }
-
-    /**
-     * This method takes an XML Node and parse it to create
-     * a JSONObject associated using the Lunatic library
-     *
-     * @param fileName
-     * @param nodeName
-     * @return JSONObject
-     * @throws Exception
-     */
-    public static JSONObject lunaticXmlToJSON(String fileName, String nodeName) throws Exception {
-        NodeList questionnaireXml = getXmlNodeFile(fileName, nodeName);
-        Node nodeQuestionnaireXml = null;
-        String questionnaireString = null;
-        JSONCleaner jsonCleaner = new JSONCleaner();
-        if (questionnaireXml != null) {
-            for (int itr = 0; itr < questionnaireXml.getLength(); itr++) {
-                nodeQuestionnaireXml = questionnaireXml.item(itr);
-                questionnaireString = nodeToString(nodeQuestionnaireXml);
-            }
-        }
-        if (StringUtils.isBlank(questionnaireString)) {
-            return new JSONObject();
-        }
-        XMLLunaticToXMLLunaticFlatTranslator translator = new XMLLunaticToXMLLunaticFlatTranslator();
-        XMLLunaticFlatToJSONLunaticFlatTranslator translator2 = new XMLLunaticFlatToJSONLunaticFlatTranslator();
-        String stringQuestionnaire = jsonCleaner.clean(translator2.translate(translator.generate(questionnaireString)));
-        JSONParser parser = new JSONParser();
-        return (JSONObject) parser.parse(stringQuestionnaire);
-
     }
 
     /**
@@ -478,7 +391,7 @@ public class XmlUtils {
         if (data != null && (data.getChildNodes().getLength() > 1 ||
                 (data.getChildNodes().getLength() == 1 && data.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE))) {
             Document dataXml = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            Transformer transformer = getTransformer();
             XMLLunaticDataToJSON xmlLunaticDataToJSON = new XMLLunaticDataToJSON();
             File fileDataXml = Files.createTempFile(Constants.TEMP_FOLDER, "tempFileData", ".xml").toFile();
             Node copyNode = dataXml.importNode(data, true);
@@ -507,22 +420,6 @@ public class XmlUtils {
     }
 
     /**
-     * This method convert a Node Object in String
-     *
-     * @param node
-     * @return String of the node Object passed in parameter
-     * @throws TransformerException
-     */
-    private static String nodeToString(Node node) throws TransformerException {
-        StringWriter sw = new StringWriter();
-        Transformer t = TransformerFactory.newInstance().newTransformer();
-        t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        t.setOutputProperty(OutputKeys.INDENT, "yes");
-        t.transform(new DOMSource(node), new StreamResult(sw));
-        return sw.toString();
-    }
-
-    /**
      * This method takes a document and an id in entry, it removes the surveyUnit node
      * identified by its id in the document
      *
@@ -544,7 +441,7 @@ public class XmlUtils {
         Node parent = node.getParentNode();
         parent.removeChild(node);
         DOMSource domSource = new DOMSource(doc);
-        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        Transformer transformer = getTransformer();
         StringWriter sw = new StringWriter();
         StreamResult sr = new StreamResult(sw);
         transformer.transform(domSource, sr);
@@ -640,4 +537,10 @@ public class XmlUtils {
         return surveyUnits;
     }
 
+    private static Transformer getTransformer() throws TransformerConfigurationException {
+        TransformerFactory tf = TransformerFactory.newInstance();
+        tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+        return tf.newTransformer();
+    }
 }

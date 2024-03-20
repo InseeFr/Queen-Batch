@@ -3,10 +3,7 @@ package fr.insee.queen.batch.object;
 import java.util.UUID;
 
 import org.json.simple.JSONObject;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection="data")
 public class Data {
 	/**
 	 * Id of the data
@@ -21,7 +18,6 @@ public class Data {
 	/**
 	 * SurveyUnit related to the data
 	 */
-	@DBRef
 	private SurveyUnit surveyUnit;
 	
 	public Data(){

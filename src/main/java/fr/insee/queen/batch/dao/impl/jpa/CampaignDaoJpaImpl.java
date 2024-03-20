@@ -6,12 +6,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
-
-import fr.insee.queen.batch.config.ConditonJpa;
 import fr.insee.queen.batch.dao.CampaignDao;
 import fr.insee.queen.batch.object.Campaign;
 
@@ -21,7 +18,6 @@ import fr.insee.queen.batch.object.Campaign;
  *
  */
 @Service
-@Conditional(value= ConditonJpa.class)
 public class CampaignDaoJpaImpl implements CampaignDao {
 	
 	@Autowired

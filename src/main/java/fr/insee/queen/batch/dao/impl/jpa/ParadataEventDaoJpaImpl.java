@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-import fr.insee.queen.batch.dao.mongo.impl.ParadataEventDaoMongoImpl;
 import fr.insee.queen.batch.object.ParadataEvent;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -13,12 +12,10 @@ import org.json.simple.parser.ParseException;
 import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-import fr.insee.queen.batch.config.ConditonJpa;
 import fr.insee.queen.batch.dao.ParadataEventDao;
 import fr.insee.queen.batch.service.DatabaseService;
 
@@ -28,7 +25,6 @@ import fr.insee.queen.batch.service.DatabaseService;
  *
  */
 @Service
-@Conditional(value= ConditonJpa.class)
 public class ParadataEventDaoJpaImpl implements ParadataEventDao{
 
 	@Autowired

@@ -1,7 +1,6 @@
 package fr.insee.queen.batch.object;
 
 import org.json.simple.JSONObject;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
 * Object XmlQuestionnaireModel : represent the questionnaire model in XML file
@@ -9,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 * @author Claudel Benjamin
 * 
 */
-@Document(collection="questionnaire_model")
 public class QuestionnaireModel {
 	/**
 	* The id of questionnaire model 

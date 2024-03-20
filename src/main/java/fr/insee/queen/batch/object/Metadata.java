@@ -1,12 +1,8 @@
 package fr.insee.queen.batch.object;
 
 import java.util.UUID;
-
-import javax.persistence.Column;
-
+import jakarta.persistence.Column;
 import org.json.simple.JSONObject;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
 * Object Metadata
@@ -14,7 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 * @author Claudel Benjamin
 * 
 */
-@Document(collection="metadata")
 public class Metadata {
 	/**
 	 * The id of the Metadata
@@ -30,7 +25,6 @@ public class Metadata {
 	/**
 	 * The campaign associated to the Metadata
 	 */
-	@DBRef
 	private Campaign campaign;
 
 	public Metadata() {

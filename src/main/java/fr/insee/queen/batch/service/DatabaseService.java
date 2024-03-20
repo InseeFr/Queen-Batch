@@ -85,14 +85,6 @@ public class DatabaseService {
 	}
 	
 	/**
-	 * This method return true if the persistence type is JPA
-	 * @return
-	 */
-	public boolean isJpaDatabase() {
-		return true;
-	}
-	
-	/**
 	 * Get the key idSu for paradata
 	 * @return
 	 */

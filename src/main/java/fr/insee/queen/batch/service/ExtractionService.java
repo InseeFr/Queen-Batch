@@ -180,9 +180,7 @@ public class ExtractionService {
 	 */
 	@SuppressWarnings("resource")
 	public void extractParadata(BatchOption batchOption, Campaign c, String out, List<String> lstSu) throws IOException, SQLException, DataBaseException {
-		if(databaseService.isJpaDatabase()) {
-			connection.setAutoCommit(false);
-		}
+		connection.setAutoCommit(false);
 		try {
 			lstSu.stream().forEach(id -> stateDataDao.updateSurveyUnitStateById(id, "TOEXTRACT"));
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -204,22 +202,20 @@ public class ExtractionService {
 					new File(fileName.toString()).delete();
 				}
 				FileWriter fileWriter = new FileWriter(fileName.toString(), true);
-				fileWriter.write(gson.toJson(JsonParser.parseString(paradataEventDao.findBySurveyUnitId(id).toJSONString())));
+				JSONObject paradatas = paradataEventDao.findBySurveyUnitId(id);
+				paradatas.remove("ids");
+				fileWriter.write(gson.toJson(JsonParser.parseString(paradatas.toJSONString())));
 				fileWriter.flush();
 				fileWriter.close();
 			}
 			lstSu.stream().forEach(id -> stateDataDao.updateSurveyUnitStateById(id, "EXTRACTED"));
 		} catch (Exception e) {
 			logger.log(Level.WARN, "Error message : {}", e.getMessage());
-			if(databaseService.isJpaDatabase()) {
-				connection.rollback();
-				connection.setAutoCommit(true);
-			}
+			connection.rollback();
+			connection.setAutoCommit(true);
 			throw new DataBaseException("Error during update state of SU in DB ... Rollback : " + e.getMessage());
 		} finally {
-			if(databaseService.isJpaDatabase()) {
-				connection.setAutoCommit(true);
-			}
+			connection.setAutoCommit(true);
 		}
 	}
 	

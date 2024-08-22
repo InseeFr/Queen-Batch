@@ -8,11 +8,9 @@ import org.json.simple.JSONObject;
 import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import fr.insee.queen.batch.config.ConditonJpa;
 import fr.insee.queen.batch.dao.CommentDao;
 import fr.insee.queen.batch.object.SurveyUnit;
 
@@ -22,7 +20,6 @@ import fr.insee.queen.batch.object.SurveyUnit;
  *
  */
 @Service
-@Conditional(value= ConditonJpa.class)
 public class CommentDaoJpaImpl implements CommentDao {
 
 	@Autowired

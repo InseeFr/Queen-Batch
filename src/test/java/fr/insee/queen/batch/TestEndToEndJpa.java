@@ -70,7 +70,6 @@ public class TestEndToEndJpa extends TestEndToEnd {
 		logger.info("Tests starts");
 		postgreSQLContainer = new PostgreSQLContainer("postgres")
 				.withDatabaseName("queen").withUsername("queen").withPassword("queen");
-		System.setProperty("fr.insee.queen.application.persistenceType", "JPA");
 		postgreSQLContainer.start();
 		System.setProperty("fr.insee.queen.persistence.database.host", postgreSQLContainer.getContainerIpAddress());
 		System.setProperty("fr.insee.queen.persistence.database.port",

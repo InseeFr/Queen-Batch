@@ -1,15 +1,11 @@
 package fr.insee.queen.batch.object;
 
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
-
 /**
  * Object XmlSurveyUnit : represent the survey unit in XML file
  * 
  * @author Claudel Benjamin
  * 
  */
-@Document(collection="survey_unit")
 public class SurveyUnit {
 
 	/**
@@ -20,36 +16,30 @@ public class SurveyUnit {
 	/**
 	 * Campaign associated to the survey-unit
 	 */
-	@DBRef
 	private Campaign campaign;
 	
 	/**
 	 * Questionnaire associated to the survey-unit
 	 */
-	@DBRef
 	private QuestionnaireModel questionnaireModel;
 	
 	/**
 	 * The JSON comment of survey unit
 	 */
-	@DBRef
 	private Comment comment;
 	
 	/**
 	 * The JSON data of survey unit
 	 */
-	@DBRef
 	private Data data;
 	
 	/**
 	 * The stateData of the survey-unit
 	 */
-	@DBRef
 	private StateData stateData;
 	/**
 	 * The JSON personalization of survey unit
 	 */
-	@DBRef
 	private Personalization personalization;
 
 	/**

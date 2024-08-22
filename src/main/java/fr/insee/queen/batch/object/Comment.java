@@ -3,10 +3,7 @@ package fr.insee.queen.batch.object;
 import java.util.UUID;
 
 import org.json.simple.JSONObject;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection="comment") 
 public class Comment {
 	
 	/**
@@ -22,7 +19,6 @@ public class Comment {
 	/**
 	 * SurveyUnit associated to the comment
 	 */
-	@DBRef
 	private SurveyUnit surveyUnit;
 	
 	/**

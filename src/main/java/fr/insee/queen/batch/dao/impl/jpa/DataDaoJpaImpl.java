@@ -10,11 +10,9 @@ import org.json.simple.parser.ParseException;
 import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import fr.insee.queen.batch.config.ConditonJpa;
 import fr.insee.queen.batch.dao.DataDao;
 import fr.insee.queen.batch.object.SurveyUnit;
 
@@ -24,7 +22,6 @@ import fr.insee.queen.batch.object.SurveyUnit;
  *
  */
 @Service
-@Conditional(value= ConditonJpa.class)
 public class DataDaoJpaImpl implements DataDao {
 
 	@Autowired
@@ -61,14 +58,23 @@ public class DataDaoJpaImpl implements DataDao {
 	 * Delete all data for a list of SU
 	 */
 	@Override
-	public void deleteDataBySurveyUnitIds(List<String> lstSu) {
+	public int deleteDataBySurveyUnitIds(List<String> lstSu) {
 		String values = lstSu.stream().map(id->"?").collect(Collectors.joining(","));
 		StringBuilder qStringBuilder = new StringBuilder("DELETE FROM data AS d ")
 		.append("USING survey_unit AS su ")
 		.append("WHERE su.id = d.survey_unit_id ")
 		.append("AND su.id IN (%s)");
 		String qString = String.format(qStringBuilder.toString(), values);
-		jdbcTemplate.update(qString, lstSu.toArray());
+		return jdbcTemplate.update(qString, lstSu.toArray());
+	}
+
+	@Override
+	public int setDataToEmptyBySurveyUnitIds(List<String> lstSu) {
+		String values = lstSu.stream().map(id->"?").collect(Collectors.joining(","));
+		StringBuilder qStringBuilder = new StringBuilder("UPDATE data SET value='{}'::jsonb ")
+				.append("WHERE survey_unit_id in (%s)");
+		String qString = String.format(qStringBuilder.toString(), values);
+		return jdbcTemplate.update(qString, lstSu.toArray());
 	}
 
 	/**

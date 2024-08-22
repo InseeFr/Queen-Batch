@@ -3,17 +3,13 @@ package fr.insee.queen.batch.object;
 import java.util.UUID;
 
 import org.json.simple.JSONArray;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection="personalization")
 public class Personalization {
 
 	private UUID id;
 	
 	private JSONArray value;
 	
-	@DBRef
 	private SurveyUnit surveyUnit;
 	
 	public Personalization() {

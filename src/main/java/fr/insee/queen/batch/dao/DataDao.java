@@ -40,7 +40,13 @@ public interface DataDao {
 	 * Delete data by a list of SU
 	 * @param lstSu
 	 */
-	void deleteDataBySurveyUnitIds(List<String> lstSu);
+	int deleteDataBySurveyUnitIds(List<String> lstSu);
+
+	/**
+	 * Set data to empty json for a list of SU
+	 * @param lstSu
+	 */
+	int setDataToEmptyBySurveyUnitIds(List<String> lstSu);
 
 	/**
 	 * Delete data by a campaign Id

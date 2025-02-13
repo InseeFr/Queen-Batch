@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -166,6 +167,21 @@ public class LoadService {
 			requiredNomenclatureDao = context.getBean(RequiredNomenclatureDao.class);
 			// Retrieve complete xml Objects
 			Sample sample = xmlUtils.createSample(pathSampleIn);
+			List<SurveyUnit> surveyUnits = sample.getSurveyUnits();
+
+			if(surveyUnits != null && !surveyUnits.isEmpty()) {
+				List<String> questionnaireIds = sample
+						.getCampaign()
+						.getQuestionnaireModels()
+						.stream()
+						.map(QuestionnaireModel::getId)
+						.distinct()
+						.collect(Collectors.toList());
+
+				for (String id : questionnaireIds) {
+					questionnaireModelDao.findById(id);
+				}
+			}
 			returnCode = createOrUpdateCampaign(sample, pathSampleOut, returnCode);
 		} catch (Exception e) {
 			throw new BatchException(e.getMessage());

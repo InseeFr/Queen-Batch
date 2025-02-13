@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import fr.insee.queen.batch.object.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,9 +28,6 @@ import fr.insee.queen.batch.enums.BatchErrorCode;
 import fr.insee.queen.batch.enums.BatchOption;
 import fr.insee.queen.batch.exception.BatchException;
 import fr.insee.queen.batch.exception.DataBaseException;
-import fr.insee.queen.batch.object.Nomenclature;
-import fr.insee.queen.batch.object.Sample;
-import fr.insee.queen.batch.object.SurveyUnit;
 import fr.insee.queen.batch.utils.XmlUtils;
 
 /**
@@ -90,6 +88,29 @@ public class DeleteService {
 		if(!campaignDao.exist(sample.getCampaign().getId())) {
 			throw new BatchException(String.format("Campaign %s does not exist in database", sample.getCampaign().getId()));			
 		}
+
+		String questionnaireId = null;
+		try {
+			List<SurveyUnit> surveyUnits = sample.getSurveyUnits();
+
+			if(surveyUnits != null && !surveyUnits.isEmpty()) {
+				List<String> questionnaireIds = sample
+						.getCampaign()
+						.getQuestionnaireModels()
+						.stream()
+						.map(QuestionnaireModel::getId)
+						.distinct()
+						.collect(Collectors.toList());
+
+				for (String id : questionnaireIds) {
+					questionnaireId = id;
+					questionnaireModelDao.findById(id);
+				}
+			}
+		} catch (Exception e) {
+			throw new BatchException(String.format("Error on find questionnaire by id %s : %s", questionnaireId, e.getMessage()));
+		}
+
 		connection.setAutoCommit(false);
 
 		if(sample.getSurveyUnits() ==null || sample.getSurveyUnits().isEmpty()) {

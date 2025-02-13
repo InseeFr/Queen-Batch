@@ -5,7 +5,6 @@ import fr.insee.lunatic.conversion.data.XMLLunaticToXSDData;
 import fr.insee.lunatic.utils.Modele;
 import fr.insee.lunatic.utils.SchemaValidator;
 import fr.insee.queen.batch.Constants;
-import fr.insee.queen.batch.dao.QuestionnaireModelDao;
 import fr.insee.queen.batch.exception.BatchException;
 import fr.insee.queen.batch.exception.ValidateException;
 import fr.insee.queen.batch.object.Comment;
@@ -16,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.*;
 
@@ -50,9 +48,6 @@ import java.util.*;
 @Service
 public class XmlUtils {
     private static final Logger logger = LogManager.getLogger(XmlUtils.class);
-
-    @Autowired
-    QuestionnaireModelDao questionnaireModelDao;
 
     /**
      * get an XML node in an XML File
@@ -509,11 +504,7 @@ public class XmlUtils {
                     if (surveyUnit.getElementsByTagName("Id").item(0).getTextContent() != null &&
                             !surveyUnitsIds.contains(surveyUnit.getElementsByTagName("Id").item(0).getTextContent())) {
                         QuestionnaireModel questionnaireModel = new QuestionnaireModel();
-                        try {
-                            questionnaireModel = questionnaireModelDao.findById(surveyUnit.getElementsByTagName("QuestionnaireModelId").item(0).getTextContent());
-                        } catch (Exception e) {
-                            throw new ValidateException(String.format("Error on find questionnaire by id %s : %s", surveyUnit.getElementsByTagName("QuestionnaireModelId").item(0).getTextContent(), e.getMessage()));
-                        }
+                        questionnaireModel.setId(surveyUnit.getElementsByTagName("QuestionnaireModelId").item(0).getTextContent());
                         questionnaireModel.setCampaignId(campaign.getId());
                         questionnaireModels.add(questionnaireModel);
                         surveyUnits.add(

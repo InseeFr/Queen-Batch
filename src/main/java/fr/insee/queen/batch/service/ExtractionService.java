@@ -264,16 +264,24 @@ public class ExtractionService {
 		JSONLunaticDataToXML jsonLunaticDataToXML = new JSONLunaticDataToXML();
 		JSONObject dataJson = dataDao.getDataBySurveyUnitId(suId);
 		// create a temporary file
-		Path tempFile = Files.createTempFile(null, null);
-		try (FileWriter file = new FileWriter(tempFile.toFile())) {
+		Path tempFilePath = Files.createTempFile(null, null);
+		File tempFile = tempFilePath.toFile();
+		try (FileWriter file = new FileWriter(tempFile)) {
 			file.write(dataJson.toJSONString());
 		} catch (IOException e) {
 			logger.log(Level.ERROR, "Error during extract Data content for Survey-Unit {}", suId);
 		}
-		File xmlData = jsonLunaticDataToXML.transform(tempFile.toFile());
+		File xmlData = jsonLunaticDataToXML.transform(tempFile);
 		SAXBuilder builder = new SAXBuilder();
 		Document document = builder.build(xmlData);
-		
+
+		try {
+			Files.delete(tempFilePath);
+			Files.delete(xmlData.toPath());
+		} catch (IOException e) {
+			logger.log(Level.WARN, "temp file has not be deleted: {}", e.getMessage());
+		}
+
 		return document.getRootElement().detach();
 	}
 	

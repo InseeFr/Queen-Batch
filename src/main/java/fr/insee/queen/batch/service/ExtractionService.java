@@ -68,17 +68,12 @@ public class ExtractionService {
 	@Autowired
 	StateDataDao stateDataDao;
 	
-	@Autowired
-	DatabaseService databaseService;
-	
 	@Autowired(required=false)
 	@Qualifier("connection")
 	Connection connection;
 	
 	BatchOption batchOption;
-	File fileData;
-	FileWriter fileWriterData;
-	
+
 	private static final Logger logger = LogManager.getLogger(ExtractionService.class);
 
 	/**
@@ -182,7 +177,6 @@ public class ExtractionService {
 	public void extractParadata(BatchOption batchOption, Campaign c, String out, List<String> lstSu) throws IOException, SQLException, DataBaseException {
 		connection.setAutoCommit(false);
 		try {
-			lstSu.stream().forEach(id -> stateDataDao.updateSurveyUnitStateById(id, "TOEXTRACT"));
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			for(String id : lstSu) {
 				StringBuilder fileName = new StringBuilder(out)
@@ -218,12 +212,10 @@ public class ExtractionService {
 			connection.setAutoCommit(true);
 		}
 	}
-	
+
 	/**
 	 * Construct the <SurveyUnits> tag
-	 * @param c
 	 * @param lstSu
-	 * @param out
 	 * @return
 	 * @throws Exception
 	 */
@@ -241,8 +233,6 @@ public class ExtractionService {
 	 * Construct the <SurveyUnit> tag
 	 * @param suId
 	 * @param qmId
-	 * @param out
-	 * @param campaignId
 	 * @return
 	 * @throws Exception
 	 */

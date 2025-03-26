@@ -91,8 +91,10 @@ public class QuestionnaireModel {
 	public String getCampaignId() {
 		return campaignId;
 	}
+
 	/**
-	 * @param xmlNomenclatures list of required nomenclature to set
+	 *
+	 * @param campaignId
 	 */
 	public void setCampaignId(String campaignId) {
 		this.campaignId = campaignId;

@@ -53,20 +53,4 @@ public class CommentDaoJpaImpl implements CommentDao {
 		String qString = String.format(qStringBuilder.toString(), values);
 		jdbcTemplate.update(qString, lstSu.toArray());
 	}
-
-	/**
-	 * Delete all comment for a campaign
-	 */
-	@Override
-	public void deleteCommentByCampaignId(String campaignId) {
-		StringBuilder qString = new StringBuilder("DELETE FROM comment AS com ")
-				.append("USING ")
-				.append("survey_unit AS su, ")
-				.append("campaign AS c ")
-				.append("WHERE su.id = com.survey_unit_id ")
-				.append("AND su.campaign_id=c.id ")
-				.append("AND c.id = ?");
-		jdbcTemplate.update(qString.toString(), campaignId);
-	}
-
 }

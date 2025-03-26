@@ -55,8 +55,6 @@ public class ApplicationContext {
 	
 	@Value("${fr.insee.queen.key.paradata.events}")
 	private String keyParadataEvents;
-
-	private String campaignName = "";
 	
 	private String filename = "";
 	
@@ -107,7 +105,7 @@ public class ApplicationContext {
 	 * @return
 	 */
 	@Bean
-	public String getFolderIn() {
+	public String folderIn() {
 		return FOLDER_IN;
 	}
 	
@@ -116,7 +114,7 @@ public class ApplicationContext {
 	 * @return
 	 */
 	@Bean
-	public String getFolderOut() {
+	public String folderOut() {
 		return FOLDER_OUT;
 	}
 	
@@ -136,15 +134,6 @@ public class ApplicationContext {
 	@Bean
 	public String getKeyParadataEvents() {
 		return keyParadataEvents;
-	}
-	
-	/**
-	 * Bean to get the campaign name
-	 * @return
-	 */
-	@Bean
-	public String getCampaignName() {
-		return campaignName;
 	}
 	
 	/**

@@ -44,17 +44,6 @@ public class StateDataDaoJpaImpl implements StateDataDao{
 	}
 
 	/**
-	 * Delete a state for all Survey units of a campaign
-	 */
-	@Override
-	public void deleteStateDataByCampaignId(String campaignId) {
-		StringBuilder qString = new StringBuilder("DELETE FROM state_data AS stateData ")
-				.append("USING survey_unit AS su ")
-				.append("WHERE su.id = stateData.survey_unit_id AND su.campaign_id =?");
-		jdbcTemplate.update(qString.toString(), campaignId);
-	}
-
-	/**
 	 * Update state of a Survey Unit
 	 */
 	@Override

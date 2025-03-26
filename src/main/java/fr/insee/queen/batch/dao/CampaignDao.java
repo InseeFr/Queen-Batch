@@ -22,7 +22,7 @@ public interface CampaignDao {
     /**
      * Get an Campaign by id in database
      * @param id
-     * @return Nomenclature object
+     * @return Campaign object
      * @throws Exception
      */
 	Campaign findById(String id);
@@ -40,11 +40,4 @@ public interface CampaignDao {
 	 * @return {@link List} of {@link String}
 	 */
 	List<Campaign> findAll();
-
-	/**
-	 * Delete a campaign by his id
-	 * @param id
-	 */
-	void delete(String id);
-
 }

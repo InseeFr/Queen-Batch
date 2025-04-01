@@ -27,7 +27,6 @@ public class Campaign {
 	 * 
 	 * @param id
 	 * @param label
-	 * @param questionnaireModels
 	 */
 	public Campaign(String id, String label) {
 		super();
@@ -72,8 +71,9 @@ public class Campaign {
 	public List<QuestionnaireModel> getQuestionnaireModels() {
 		return questionnaireModels;
 	}
+
 	/**
-	 * @param surveyUnits list of survey unit to set
+	 * @param questionnaireModels
 	 */
 	public void setQuestionnaireModels(List<QuestionnaireModel> questionnaireModels) {
 		this.questionnaireModels = questionnaireModels;

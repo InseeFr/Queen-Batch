@@ -7,12 +7,8 @@ package fr.insee.queen.batch.enums;
  */
 public enum BatchErrorCode {
 	OK(0, "Exécution correcte(sans avertissement)"),
-	OK_WITH_STOP(100, "Exécution correcte (mais arrêt)"),
-	OK_FONCTIONAL_WARNING(200, "Exécution correcte avec des avertissements fonctionnels"),
 	OK_TECHNICAL_WARNING(201, "Exécution correcte avec des avertissements techniques"),
-	KO_TECHNICAL_ERROR(202, "Echec de l'exécution avec des avertissements techniques"),
-	KO_FONCTIONAL_ERROR(203, "Echec de l'exécution avec des avertissements fonctionnels");
-
+	KO_TECHNICAL_ERROR(202, "Echec de l'exécution avec des avertissements techniques");
 	/**
      * return code
      */

@@ -47,10 +47,4 @@ public interface DataDao {
 	 * @param lstSu
 	 */
 	int setDataToEmptyBySurveyUnitIds(List<String> lstSu);
-
-	/**
-	 * Delete data by a campaign Id
-	 * @param campaignId
-	 */
-	void deleteDataByCampaignId(String campaignId);
 }

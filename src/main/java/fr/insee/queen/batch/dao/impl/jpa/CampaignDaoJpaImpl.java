@@ -82,13 +82,4 @@ public class CampaignDaoJpaImpl implements CampaignDao {
 		return jdbcTemplate.query(qString.toString(), 
 				(rs, rowNum) -> new Campaign(rs.getString("id"), rs.getString("label")));
 	}
-
-	/**
-	 * Delete a campaign by his id
-	 */
-	@Override
-	public void delete(String id) {
-		StringBuilder qString = new StringBuilder("DELETE FROM campaign WHERE id = ?");
-		jdbcTemplate.update(qString.toString(), id);
-	}
 }

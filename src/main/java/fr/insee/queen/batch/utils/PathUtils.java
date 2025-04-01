@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -19,12 +18,6 @@ import fr.insee.queen.batch.enums.BatchOption;
 import fr.insee.queen.batch.exception.FolderException;
 
 /**
- * Operation on paths
- * - isDirectoryExist
- * - isDirContainsFileExtension
- * - getListFileName
- * - isFileExist
- * - getExtensionByStringHandling
  *
  * @author Claudel Benjamin
  */
@@ -221,17 +214,6 @@ public class PathUtils {
     }
 
     /**
-     * get the extention of a given filename
-     *
-     * @param filename filename to check
-     * @return the extention of the file
-     */
-    public static Optional<String> getExtensionByStringHandling(String filename) {
-        return Optional.ofNullable(filename).filter(f -> f.contains("."))
-                .map(f -> f.substring(filename.lastIndexOf('.') + 1));
-    }
-
-    /**
      * get the file name without extention of a given filename
      *
      * @param filename filename to check
@@ -239,16 +221,6 @@ public class PathUtils {
      */
     public static String getFileNameWithoutExtension(String filename) {
         return filename.replaceFirst("[.][^.]+$", "");
-    }
-
-    /**
-     * Moving a file to a destination
-     *
-     * @param file
-     * @param destination
-     */
-    public static void moveFile(String file, String destination) {
-        new File(file).renameTo(new File(destination));
     }
 
     public static void createDirectory(String path) {

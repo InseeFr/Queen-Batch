@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import fr.insee.queen.batch.object.Campaign;
-import fr.insee.queen.batch.object.QuestionnaireModel;
 import fr.insee.queen.batch.object.StateData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -116,19 +115,6 @@ public class SurveyUnitDaoJpaImpl implements SurveyUnitDao {
 	}
 
 	/**
-	 * Delete all SU for a campaign
-	 * @param id
-	 */
-	@Override
-	public void deleteSurveyUnitByCampaignId(String campaignId) {
-		StringBuilder qString = new StringBuilder("DELETE FROM survey_unit AS su ")
-		.append("USING campaign AS c ")
-		.append("WHERE su.campaign_id=c.id ")
-		.append("AND c.id = ?");
-		jdbcTemplate.update(qString.toString(), campaignId);
-	}
-
-	/**
 	 * Update a SurveyUnit
 	 * @param surveyUnit
 	 */
@@ -148,17 +134,6 @@ public class SurveyUnitDaoJpaImpl implements SurveyUnitDao {
 	public String findQuestionnaireIdBySurveyUnitId(String id) {
 		StringBuilder qString = new StringBuilder("SELECT questionnaire_model_id FROM survey_unit WHERE id= ?");
 		return jdbcTemplate.queryForObject(qString.toString(), new Object[]{id}, String.class);
-	}
-
-	/**
-	 * Delete meta data by campaign id
-	 * @param id
-	 */
-	@Override
-	public void deleteMetaDataByCampaignId(String id) {
-		StringBuilder qString = new StringBuilder("DELETE FROM metadata AS metaData ")
-				.append("WHERE metaData.campaign_id =?");
-		jdbcTemplate.update(qString.toString(), id);
 	}
 
 	/**

@@ -59,24 +59,12 @@ public interface SurveyUnitDao {
 	 * @param lstSu
 	 */
 	void deleteSurveyUnits(List<String> lstSu);
-	
-	/**
-	 * Delete all SU for a campaign
-	 * @param id
-	 */
-	void deleteSurveyUnitByCampaignId(String id);
-	
+
 	/**
 	 * Update a SurveyUnit
 	 * @param surveyUnit
 	 */
 	void updateSurveyUnit(SurveyUnit surveyUnit);
-	
-	/**
-	 * Delete meta data by campaign id
-	 * @param id
-	 */
-	void deleteMetaDataByCampaignId(String id);
 
 	/**
 	 * Get ids for survey unit with state "validated"

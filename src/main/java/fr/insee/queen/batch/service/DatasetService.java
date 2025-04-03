@@ -3,6 +3,8 @@ package fr.insee.queen.batch.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import fr.insee.queen.batch.dao.CampaignDao;
 import fr.insee.queen.batch.dao.DataDao;
-import fr.insee.queen.batch.dao.NomenclatureDao;
 import fr.insee.queen.batch.dao.ParadataEventDao;
 import fr.insee.queen.batch.dao.PersonalizationDao;
 import fr.insee.queen.batch.dao.QuestionnaireModelDao;
@@ -20,7 +21,6 @@ import fr.insee.queen.batch.dao.StateDataDao;
 import fr.insee.queen.batch.dao.SurveyUnitDao;
 import fr.insee.queen.batch.object.Campaign;
 import fr.insee.queen.batch.object.Data;
-import fr.insee.queen.batch.object.Nomenclature;
 import fr.insee.queen.batch.object.Personalization;
 import fr.insee.queen.batch.object.QuestionnaireModel;
 import fr.insee.queen.batch.object.StateData;
@@ -28,7 +28,9 @@ import fr.insee.queen.batch.object.SurveyUnit;
 
 @Service
 public class DatasetService {
-	
+
+	private static final Logger logger = LogManager.getLogger(DatasetService.class);
+
 	@Autowired
 	ApplicationContext context;
 	/**
@@ -40,7 +42,6 @@ public class DatasetService {
 	public void createDataSet() throws Exception {
 		// Datasource initialization
 		context = new AnnotationConfigApplicationContext(fr.insee.queen.batch.config.ApplicationContext.class);
-		NomenclatureDao nomenclatureDao = context.getBean(NomenclatureDao.class);
 		QuestionnaireModelDao questionnaireModelDao = context.getBean(QuestionnaireModelDao.class);
 		CampaignDao campaignDao = context.getBean(CampaignDao.class);
 		SurveyUnitDao surveyUnitDao = context.getBean(SurveyUnitDao.class);
@@ -48,10 +49,6 @@ public class DatasetService {
 		StateDataDao stateDataDao = context.getBean(StateDataDao.class);
 		PersonalizationDao personalizationDao = context.getBean(PersonalizationDao.class);
 		ParadataEventDao paradataEventDao = context.getBean(ParadataEventDao.class);
-		Nomenclature nomenclatureCities2019 = new Nomenclature("cities2019", "french cities 2019", new JSONArray());
-		Nomenclature nomenclatureRegions2019 = new Nomenclature("regions2019", "french regions 2019", new JSONArray());
-		nomenclatureDao.create(nomenclatureCities2019);
-		nomenclatureDao.create(nomenclatureRegions2019);
 		QuestionnaireModel questionnaireSimpsons = new QuestionnaireModel("simpsons", "Questionnaire about the Simpsons tv show", new JSONObject(), "SIMPSONS2020X00");
 		questionnaireModelDao.create(questionnaireSimpsons, null);
 		Campaign campaignSimpsons = new Campaign("SIMPSONS2020X00", "Survey on the Simpsons tv show 2020");
@@ -107,6 +104,6 @@ public class DatasetService {
 		stateDataDao.createStateData(stateData14);
 		stateDataDao.createStateData(stateData15);
 		personalizationDao.createPersonalization(su11);
-		System.out.println("DB created");
+		logger.info("DB created");
 	}
 }

@@ -33,12 +33,6 @@ public interface PersonalizationDao {
 	List<Personalization> findBySurveyUnitId(String surveyUnitId);
 	
 	/**
-	 * Delete all the personalization for a campaign
-	 * @param campaignId
-	 */
-	void deleteByCampaignId(String campaignId);
-	
-	/**
 	 * Delete all the personalizations for a list of Survey
 	 * @param lstSu
 	 */

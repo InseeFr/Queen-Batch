@@ -17,7 +17,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import fr.insee.queen.batch.dao.ParadataEventDao;
-import fr.insee.queen.batch.service.DatabaseService;
 
 /**
  * Service for the Paradata-Event entity that implements the interface associated
@@ -30,9 +29,12 @@ public class ParadataEventDaoJpaImpl implements ParadataEventDao{
 	@Autowired
 	@Qualifier("jdbcTemplate")
 	JdbcTemplate jdbcTemplate;
-	
+
 	@Autowired
-	DatabaseService databaseService;
+	String getKeyParadataIdSu;
+
+	@Autowired
+	String getKeyParadataEvents;
 	
 	/**
 	 * Method used to retreive all the paradata for a SurveyUnit
@@ -45,8 +47,8 @@ public class ParadataEventDaoJpaImpl implements ParadataEventDao{
 		JSONArray array = new JSONArray();
 		JSONArray arrayIds = new JSONArray();
 		StringBuilder qString = new StringBuilder("SELECT * FROM paradata_event WHERE value->>'").append(
-				this.databaseService.getKeyParadataIdSu()).append("' =  ? ");
-		String paradataKey = databaseService.getKeyParadataEvents();
+				getKeyParadataIdSu).append("' =  ? ");
+		String paradataKey = getKeyParadataEvents;
 		List<ParadataEvent> listParadatas =  jdbcTemplate.query(qString.toString(),new ParadataMapper(), new Object[]{suId});
 		for(ParadataEvent paradata : listParadatas) {
 			JSONObject jsonObjectTemp = (JSONObject) parser.parse(paradata.getValue());

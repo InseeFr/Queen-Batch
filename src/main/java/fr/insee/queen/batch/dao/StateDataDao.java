@@ -22,13 +22,7 @@ public interface StateDataDao {
 	 * @param lstSu
 	 */
 	void deleteStateDataBySU(List<String> lstSu);
-	
-	/**
-	 * Delete a state for all Survey units of a campaign
-	 * @param campaignId
-	 */
-	void deleteStateDataByCampaignId(String campaignId);
-	
+
 	/**
 	 * Update state of a Survey Unit
 	 * @param suId

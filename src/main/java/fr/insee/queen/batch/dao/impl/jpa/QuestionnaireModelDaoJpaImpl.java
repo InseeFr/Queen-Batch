@@ -55,33 +55,8 @@ public class QuestionnaireModelDaoJpaImpl implements QuestionnaireModelDao{
 	}
 	
 	/**
-	 * Implementation to check if a QuestionnaireModel already exist in database 
-	 * @param id
-	 * @return boolean
-	 * @throws SQLException
-	 */
-	@Override
-	public boolean existForCampaign(String id, String campaignId) {
-		StringBuilder qString = new StringBuilder("SELECT count(*) FROM questionnaire_model WHERE id=? AND campaign_id=?");
-		Long nbRes = jdbcTemplate.queryForObject(qString.toString(), new Object[]{id,campaignId}, Long.class);
-		return nbRes>0;	
-	}
-
-
-	/**
 	 * Retrieve the QuestionnaireModel by the id passed in parameter
-	 * @param id
-	 * @return QuestionnaireModel object
-	 */
-	@Override
-	public QuestionnaireModel findById(String id) {
-		StringBuilder qString = new StringBuilder("SELECT * FROM questionnaire_model WHERE id=?");
-		return jdbcTemplate.queryForObject(qString.toString(), new Object[]{id}, new QuestionnaireModelMapper());
-	}
-	
-	/**
-	 * Retrieve the QuestionnaireModel by the id passed in parameter
-	 * @param id
+	 * @param campaignId
 	 * @return QuestionnaireModel object
 	 */
 	@Override
@@ -103,27 +78,4 @@ public class QuestionnaireModelDaoJpaImpl implements QuestionnaireModelDao{
             return qm;
         }
     }
-
-	/**
-	 * Implements the update of a questionnaireModel in database
-	 * @param questionnaireModel
-	 * @throws SQLException 
-	 */
-	@Override
-	public void updateCampaignId(QuestionnaireModel questionnaireModel) throws SQLException {
-		StringBuilder qString = new StringBuilder("UPDATE questionnaire_model SET campaign_id=? WHERE id=?");
-	    jdbcTemplate.update(qString.toString(), questionnaireModel.getCampaignId(), questionnaireModel.getId());
-	}
-	
-	/**
-	 * Implements the update of a questionnaireModel in database
-	 * @param questionnaireModel
-	 * @throws SQLException 
-	 */
-	@Override
-	public void deleteCampaignIdForQuestionnaireModel(String campaignId) throws SQLException {
-		StringBuilder qString = new StringBuilder("UPDATE questionnaire_model SET campaign_id=NULL WHERE campaign_id=?");
-	    jdbcTemplate.update(qString.toString(), campaignId);
-	}
-	
 }

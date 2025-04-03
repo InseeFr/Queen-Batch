@@ -7,8 +7,8 @@ import fr.insee.lunatic.utils.SchemaValidator;
 import fr.insee.queen.batch.Constants;
 import fr.insee.queen.batch.exception.BatchException;
 import fr.insee.queen.batch.exception.ValidateException;
-import fr.insee.queen.batch.object.Comment;
 import fr.insee.queen.batch.object.*;
+import fr.insee.queen.batch.object.Comment;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,9 +21,6 @@ import org.w3c.dom.*;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -31,17 +28,14 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import javax.xml.xpath.*;
 import java.io.*;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
 /**
  * Campaign on XML Content - getXmlNodeFile - validateXMLSchema -
- * xmlToCampaign - xmlToQuestionnaireModel - xmlToNomenclatures
+ * xmlToCampaign - xmlToQuestionnaireModel
  *
  * @author Claudel Benjamin
  */
@@ -71,50 +65,6 @@ public class XmlUtils {
             logger.log(Level.ERROR, e.getMessage(), e);
             return null;
         }
-    }
-
-    /**
-     * Validate an XML file by XSD validator
-     *
-     * @param xsdPath xsd path
-     * @param xmlPath xml path
-     * @return true if XML is valid
-     * @throws IOException
-     * @throws XMLStreamException
-     * @throws BatchException
-     */
-    public static boolean validateXMLSchema(URL model, String xmlPath) throws ValidateException, IOException, XMLStreamException {
-        XMLStreamReader xmlEncoding = null;
-        ValidateException ve = null;
-        try(FileInputStream fis = new FileInputStream(xmlPath);
-            FileReader fr = new FileReader(xmlPath)) {
-            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-            factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-            Schema schema = factory.newSchema(model);
-            Validator validator = schema.newValidator();
-            validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-            validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-            xmlEncoding = XMLInputFactory.newInstance().createXMLStreamReader(fr);
-            if (xmlEncoding.getCharacterEncodingScheme().equals("UTF8") || xmlEncoding.getCharacterEncodingScheme().equals(StandardCharsets.UTF_8.toString())) {
-                validator.validate(new StreamSource(fis));
-            }
-            if (model.equals(Constants.MODEL_SAMPLE)) {
-                validateXMLSchemaQuestionnaire(xmlPath);
-                validateXMLSchemaData(xmlPath);
-            }
-        } catch (Exception e) {
-            ve = new ValidateException("Error during validation : " + e.getMessage());
-        } finally {
-            if (xmlEncoding != null) {
-                xmlEncoding.close();
-            }
-        }
-        if (ve != null) {
-            throw ve;
-        }
-        logger.log(Level.INFO, "{} validate with {}", xmlPath, model);
-        return true;
     }
 
     /**
@@ -272,41 +222,6 @@ public class XmlUtils {
     /**
      * get campaign in xml file
      *
-     * @param isloading
-     * @param fileName  the file name
-     * @return opertion
-     * @throws IOException
-     * @throws ValidateException
-     * @throws BatchException
-     * @throws DOMException
-     */
-    public static List<Nomenclature> xmlToNomenclature(boolean isloading, String fileName, String pathToJson) throws IOException, ValidateException, BatchException {
-        List<Nomenclature> lstNomenclature = new ArrayList<>();
-        NodeList lstNodeNomenclature = getXmlNodeFile(fileName, "Nomenclature");
-        if (lstNodeNomenclature != null) {
-            for (int itr = 0; itr < lstNodeNomenclature.getLength(); itr++) {
-                Node nodeNomenclature = lstNodeNomenclature.item(itr);
-                if (nodeNomenclature.getNodeType() == Node.ELEMENT_NODE) {
-                    Element e = (Element) nodeNomenclature;
-                    Nomenclature nomenclature = new Nomenclature();
-                    nomenclature.setId(e.getElementsByTagName("Id").item(0).getTextContent());
-                    nomenclature.setLabel(e.getElementsByTagName("Label").item(0).getTextContent());
-                    if (isloading) {
-                        if (!PathUtils.isFileExist(pathToJson + e.getElementsByTagName("Id").item(0).getTextContent() + Constants.JSON)) {
-                            throw new BatchException(String.format("File %s.json doesn't exist", e.getElementsByTagName("Id").item(0).getTextContent()));
-                        }
-                        nomenclature.setValue(JSONUtils.jsonFileToJsonObject(pathToJson + nomenclature.getId() + Constants.JSON));
-                    }
-                    lstNomenclature.add(nomenclature);
-                }
-            }
-        }
-        return lstNomenclature;
-    }
-
-    /**
-     * get campaign in xml file
-     *
      * @param fileName the file name
      * @return opertion
      * @throws IOException
@@ -332,13 +247,6 @@ public class XmlUtils {
         return campaign;
     }
 
-    /**
-     * get nomenclature in xml file
-     *
-     * @param fileName the file name
-     * @return nomenclature
-     * @throws Exception
-     */
     @SuppressWarnings("unchecked")
     public static Personalization xmlToPersonalization(Node personalization) {
         JSONArray jsonArray = new JSONArray();
@@ -412,60 +320,6 @@ public class XmlUtils {
             return dataJsonObject;
         }
         return new JSONObject();
-    }
-
-    /**
-     * This method takes a document and an id in entry, it removes the surveyUnit node
-     * identified by its id in the document
-     *
-     * @param doc
-     * @param xmlId
-     * @return StreamResult
-     * @throws XPathExpressionException
-     * @throws TransformerFactoryConfigurationError
-     * @throws TransformerException
-     */
-    public static StreamResult removeSurveyUnitNode(Document doc, String xmlId) throws XPathExpressionException, TransformerFactoryConfigurationError, TransformerException {
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        XPathExpression expr = xpath.compile("//SurveyUnit[Id = \"" + xmlId + "\"]");
-        Node node = (Node) expr.evaluate(doc, XPathConstants.NODE);
-        Node prevElement = node.getPreviousSibling();
-        if (prevElement != null && prevElement.getNodeType() == Node.TEXT_NODE && prevElement.getNodeValue().trim().length() == 0) {
-            node.getParentNode().removeChild(prevElement);
-        }
-        Node parent = node.getParentNode();
-        parent.removeChild(node);
-        DOMSource domSource = new DOMSource(doc);
-        Transformer transformer = getTransformer();
-        StringWriter sw = new StringWriter();
-        StreamResult sr = new StreamResult(sw);
-        transformer.transform(domSource, sr);
-        return sr;
-    }
-
-    /**
-     * This method update an error file for the sample steps. It writes all the objects
-     * in the sample.xml that created errors
-     *
-     * @param sr
-     * @param fileName
-     */
-    public static void updateSampleFileErrorList(StreamResult sr, String fileName) {
-        // writing to file
-        File fileNew = new File(fileName);
-        try (FileOutputStream fop = new FileOutputStream(fileNew)) {
-            // if file doesnt exists, then create it
-            if (!fileNew.exists() && !fileNew.createNewFile()) {
-                logger.log(Level.ERROR, "Failed to create file %s", fileName);
-            }
-            // get the content in bytes
-            String xmlString = sr.getWriter().toString();
-            byte[] contentInBytes = xmlString.getBytes();
-            fop.write(contentInBytes);
-            fop.flush();
-        } catch (IOException e) {
-            logger.log(Level.ERROR, e.getMessage());
-        }
     }
 
     /***

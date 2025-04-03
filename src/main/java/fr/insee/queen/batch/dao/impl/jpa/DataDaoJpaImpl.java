@@ -78,21 +78,6 @@ public class DataDaoJpaImpl implements DataDao {
 	}
 
 	/**
-	 * Delete data for a campaign
-	 */
-	@Override
-	public void deleteDataByCampaignId(String campaignId) {
-		StringBuilder qString =  new StringBuilder("DELETE FROM data AS d ")
-				.append("USING ")
-				.append("survey_unit AS su, ")
-				.append("campaign AS c  ")
-				.append("WHERE su.id = d.survey_unit_id ")
-				.append("AND su.campaign_id=c.id ")
-				.append("AND c.id = ?");
-		jdbcTemplate.update(qString.toString(), campaignId);
-	}
-
-	/**
 	 * Update the data by a SU
 	 */
 	@Override

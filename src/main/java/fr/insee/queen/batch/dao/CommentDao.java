@@ -24,11 +24,4 @@ public interface CommentDao {
 	 * @param lstSu
 	 */
 	void deleteCommentBySurveyUnitIds(List<String> lstSu);
-
-	/**
-	 * Delete a comment by a campaign id
-	 * @param campaignId
-	 */
-	void deleteCommentByCampaignId(String campaignId);
-
 }

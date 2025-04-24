@@ -209,7 +209,7 @@
 							<include>TestEndToEndJpa.java</include>
 						</includes>
 						<forkedProcessExitTimeoutInSeconds>500</forkedProcessExitTimeoutInSeconds>
-						<argLine>{%argLine}-Xmx2048m -Xmx1G</argLine>
+						<argLine>-Xmx2048m -Xmx1G</argLine>
 						<environmentVariables>
 								<TESTCONTAINERS_RYUK_DISABLED>true</TESTCONTAINERS_RYUK_DISABLED>
 						</environmentVariables>

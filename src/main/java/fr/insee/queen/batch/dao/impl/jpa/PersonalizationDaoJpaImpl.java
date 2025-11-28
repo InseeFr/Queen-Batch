@@ -31,10 +31,10 @@ public class PersonalizationDaoJpaImpl implements PersonalizationDao{
 	JdbcTemplate jdbcTemplate;
 
 	/**
-	 * Get the personalization for a SurveyUnit id
+	 * Get the personalization for a Interrogation id
 	 */
 	@Override
-	public List<Personalization> findBySurveyUnitId(String surveyUnitId) {
+	public List<Personalization> findByInterrogationId(String surveyUnitId) {
 		StringBuilder qString = new StringBuilder("SELECT * FROM personalization WHERE interrogation_id= ?");
 		return jdbcTemplate.query(qString.toString(), new Object[]{surveyUnitId}, new PersonalizationModelMapper());
 	}

@@ -6,12 +6,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import fr.insee.queen.batch.object.SurveyUnit;
+import fr.insee.queen.batch.object.Interrogation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -32,11 +31,10 @@ import fr.insee.lunatic.conversion.data.JSONLunaticDataToXML;
 import fr.insee.queen.batch.dao.CampaignDao;
 import fr.insee.queen.batch.dao.DataDao;
 import fr.insee.queen.batch.dao.PersonalizationDao;
-import fr.insee.queen.batch.dao.SurveyUnitDao;
+import fr.insee.queen.batch.dao.InterrogationDao;
 import fr.insee.queen.batch.enums.BatchErrorCode;
 import fr.insee.queen.batch.enums.BatchOption;
 import fr.insee.queen.batch.exception.BatchException;
-import fr.insee.queen.batch.exception.DataBaseException;
 import fr.insee.queen.batch.object.Campaign;
 import fr.insee.queen.batch.object.Personalization;
 import fr.insee.queen.batch.utils.PathUtils;
@@ -53,7 +51,7 @@ public class ExtractionService {
 	@Autowired
 	CampaignDao campaignDao;
 	@Autowired
-	SurveyUnitDao surveyUnitDao;
+	InterrogationDao interrogationDao;
 	@Autowired
 	DataDao dataDao;
 	@Autowired
@@ -81,7 +79,7 @@ public class ExtractionService {
 		List<String> lstCampaignSuccess = new ArrayList<>();
 		for (Campaign c : lstCampaign) {
 			try {
-				extractCampaign(batchOption, c, List.of(), out);
+				extractCampaign(batchOption, c, out);
 				lstCampaignSuccess.add(c.getId());
 			}catch(Exception e) {
 				logger.log(Level.WARN, "Error occured during extraction of campaign {}", c.getId());
@@ -105,14 +103,10 @@ public class ExtractionService {
 	/**
 	 * Method use to extract a campaign
 	 * @param c
-	 * @param lstSu
 	 * @param out
 	 * @throws BatchException
-	 * @throws IOException
-	 * @throws SQLException
-	 * @throws DataBaseException
 	 */
-	public void extractCampaign(BatchOption batchOption, Campaign c, List<SurveyUnit> lstSu, String out) throws BatchException, IOException, SQLException, DataBaseException  {
+	public void extractCampaign(BatchOption batchOption, Campaign c, String out) throws BatchException  {
 		if(this.batchOption == null)
 			this.batchOption = batchOption;
 		PathUtils.createFolderTreeExtract(this.batchOption, out, c.getId());
@@ -120,7 +114,7 @@ public class ExtractionService {
 		.append("/extractdata/")
 		.append(c.getId());
 
-		lstSu = surveyUnitDao.findSurveyUnits(c.getId(), this.batchOption.getStates());
+		List<Interrogation> interrogations = interrogationDao.findInterrogations(c.getId(), this.batchOption.getStates());
 
 		if(this.batchOption.equals(BatchOption.EXTRACTDATAINIT)) {
 			fileName.append("/differential/data/data.init.");
@@ -132,7 +126,6 @@ public class ExtractionService {
 		.append(".")
 		.append(PathUtils.getTimestampForPath())
 		.append(".xml");
-		//extractParadata(this.batchOption, c, out, lstSu);
 		Document doc = new Document();
 		File file = new File(fileName.toString());
 		Element campaign = new Element("Campaign");
@@ -140,7 +133,7 @@ public class ExtractionService {
 			campaign
 					.addContent(new Element("Id").addContent(c.getId()))
 					.addContent(new Element("Label").addContent(c.getLabel()))
-					.addContent(getSureyUnitsElement(lstSu));
+					.addContent(getInterrogationsElement(interrogations));
 			doc.setRootElement(campaign);
 			// Create the XML
 			XMLOutputter outter = new XMLOutputter();
@@ -154,50 +147,50 @@ public class ExtractionService {
 	}
 
 	/**
-	 * Construct the <SurveyUnits> tag
+	 * Construct the <Interrogations> tag
 	 * @param lstSu
 	 * @return
 	 * @throws Exception
 	 */
-	private Element getSureyUnitsElement(List<SurveyUnit> lstSu) throws Exception {
+	private Element getInterrogationsElement(List<Interrogation> lstSu) throws Exception {
 		Element surveyUnits = new Element("Interrogations");
-		for (SurveyUnit su : lstSu) {
-			surveyUnits.addContent(getSurveyUnitContent(su));
+		for (Interrogation su : lstSu) {
+			surveyUnits.addContent(getInterrogationContent(su));
 		}
 		return surveyUnits;
 
 	}
 
 	/**
-	 * Construct the <SurveyUnit> tag
+	 * Construct the <Interrogation> tag
 	 * @return
 	 * @throws Exception
 	 */
-	private Element getSurveyUnitContent(SurveyUnit su) throws Exception {
+	private Element getInterrogationContent(Interrogation interro) throws Exception {
 		return new Element("Interrogation")
-					.addContent(new Element("Id").addContent(su.getId()))
-					.addContent(new Element("SurveyUnitId").addContent(su.getSurveyUnitId()))
-					.addContent(new Element("QuestionnaireModelId").addContent(su.getQuestionnaireModel().getId()))
-					.addContent(getDataContent(su.getId()))
-					.addContent(getPersonalizationContent(su.getId()));
+					.addContent(new Element("Id").addContent(interro.getId()))
+					.addContent(new Element("SurveyUnitId").addContent(interro.getSurveyUnitId()))
+					.addContent(new Element("QuestionnaireModelId").addContent(interro.getQuestionnaireModel().getId()))
+					.addContent(getDataContent(interro.getId()))
+					.addContent(getPersonalizationContent(interro.getId()));
 	}
 
 	/**
 	 * Construct the <Data> tag
-	 * @param suId
+	 * @param interroId
 	 * @return
 	 * @throws Exception
 	 */
-	private Element getDataContent(String suId) throws Exception {
+	private Element getDataContent(String interroId) throws Exception {
 		JSONLunaticDataToXML jsonLunaticDataToXML = new JSONLunaticDataToXML();
-		JSONObject dataJson = dataDao.getDataBySurveyUnitId(suId);
+		JSONObject dataJson = dataDao.getDataByInterrogationId(interroId);
 		// create a temporary file
 		Path tempFilePath = Files.createTempFile(null, null);
 		File tempFile = tempFilePath.toFile();
 		try (FileWriter file = new FileWriter(tempFile)) {
 			file.write(dataJson.toJSONString());
 		} catch (IOException e) {
-			logger.log(Level.ERROR, "Error during extract Data content for Survey-Unit {}", suId);
+			logger.log(Level.ERROR, "Error during extract Data content for Survey-Unit {}", interroId);
 		}
 		File xmlData = jsonLunaticDataToXML.transform(tempFile);
 		SAXBuilder builder = new SAXBuilder();
@@ -215,14 +208,14 @@ public class ExtractionService {
 	
 	/**
 	 * Construct the <Personalization> tag
-	 * @param suId
+	 * @param interroId
 	 * @return
 	 * @throws ParseException
 	 */
 	@SuppressWarnings("rawtypes")
-	private List<Element> getPersonalizationContent(String suId) throws ParseException{
+	private List<Element> getPersonalizationContent(String interroId) throws ParseException{
 		List<Element> personalizationsElements = new ArrayList<>();
-		List<Personalization> personalizations = personalizationDao.findBySurveyUnitId(suId);
+		List<Personalization> personalizations = personalizationDao.findByInterrogationId(interroId);
 		for (Personalization personalization : personalizations) {
 			JSONArray jsonArray = personalizationDao.getValueById(personalization.getId());
 			if(!jsonArray.isEmpty()) {

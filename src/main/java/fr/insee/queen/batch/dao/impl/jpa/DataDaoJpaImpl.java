@@ -24,12 +24,12 @@ public class DataDaoJpaImpl implements DataDao {
 	JdbcTemplate jdbcTemplate;
 	
 	/**
-	 * Get all data for a SurveyUnit
+	 * Get all data for a Interrogation
 	 */
 	@Override
-	public JSONObject getDataBySurveyUnitId(String suId) throws ParseException {
+	public JSONObject getDataByInterrogationId(String interrogationId) throws ParseException {
 		StringBuilder qString= new StringBuilder("SELECT value FROM data WHERE interrogation_id=?");
-		PGobject data =  jdbcTemplate.queryForObject(qString.toString(), new Object[]{suId}, PGobject.class);
+		PGobject data =  jdbcTemplate.queryForObject(qString.toString(), new Object[]{interrogationId}, PGobject.class);
 		JSONParser parser = new JSONParser();
 		return (JSONObject) parser.parse(data.getValue());
 		

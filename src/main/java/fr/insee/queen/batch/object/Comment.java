@@ -17,9 +17,9 @@ public class Comment {
 	private JSONObject value;
 	
 	/**
-	 * SurveyUnit associated to the comment
+	 * Interrogation associated to the comment
 	 */
-	private SurveyUnit surveyUnit;
+	private Interrogation surveyUnit;
 	
 	/**
 	 * All args constructor
@@ -27,7 +27,7 @@ public class Comment {
 	 * @param value
 	 * @param surveyUnit
 	 */
-	public Comment(UUID id, JSONObject value, SurveyUnit surveyUnit) {
+	public Comment(UUID id, JSONObject value, Interrogation surveyUnit) {
 		super();
 		this.id = id;
 		this.value = value;
@@ -66,7 +66,7 @@ public class Comment {
 	/**
 	 * @return the surveyUnit
 	 */
-	public SurveyUnit getSurveyUnit() {
+	public Interrogation getInterrogation() {
 		return surveyUnit;
 	}
 
@@ -87,7 +87,7 @@ public class Comment {
 	/**
 	 * @param surveyUnit the surveyUnit to set
 	 */
-	public void setSurveyUnit(SurveyUnit surveyUnit) {
+	public void setInterrogation(Interrogation surveyUnit) {
 		this.surveyUnit = surveyUnit;
 	}
 }

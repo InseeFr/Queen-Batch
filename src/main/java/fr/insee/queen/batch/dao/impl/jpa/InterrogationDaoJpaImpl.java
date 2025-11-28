@@ -11,16 +11,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-import fr.insee.queen.batch.dao.SurveyUnitDao;
-import fr.insee.queen.batch.object.SurveyUnit;
+import fr.insee.queen.batch.dao.InterrogationDao;
+import fr.insee.queen.batch.object.Interrogation;
 
 /**
- * Service for the SurveyUnit entity that implements the interface associated
+ * Service for the Interrogation entity that implements the interface associated
  * @author scorcaud
  *
  */
 @Service
-public class SurveyUnitDaoJpaImpl implements SurveyUnitDao {
+public class InterrogationDaoJpaImpl implements InterrogationDao {
 	
 	@Autowired
 	@Qualifier("jdbcTemplate")
@@ -32,7 +32,7 @@ public class SurveyUnitDaoJpaImpl implements SurveyUnitDao {
 	 * @return
 	 */
 	@Override
-	public List<SurveyUnit> findSurveyUnits(String campaignId, List<String> states) {
+	public List<Interrogation> findInterrogations(String campaignId, List<String> states) {
 		if (states == null || states.isEmpty()) {
 			return List.of();
 		}
@@ -52,35 +52,22 @@ public class SurveyUnitDaoJpaImpl implements SurveyUnitDao {
 		}
 		params[i] = campaignId;
 
-		return jdbcTemplate.query(sql, params, new SurveyUnitMapper());
-	}
-
-
-
-	/**
-	 * Get Survey unit by his id
-	 * @param id
-	 * @return
-	 */
-	@Override
-	public String findQuestionnaireIdBySurveyUnitId(String id) {
-		StringBuilder qString = new StringBuilder("SELECT questionnaire_model_id FROM interrogation WHERE id= ?");
-		return jdbcTemplate.queryForObject(qString.toString(), new Object[]{id}, String.class);
+		return jdbcTemplate.query(sql, params, new InterrogationMapper());
 	}
 
 	/**
 	 * Implements the mapping between the result of the query and the QuestionnaireModel entity
 	 * @return QuestionnaireModelMapper
 	 */
-	private static final class SurveyUnitMapper implements RowMapper<SurveyUnit> {
-		public SurveyUnit mapRow(ResultSet rs, int rowNum) throws SQLException         {
-			SurveyUnit su = new SurveyUnit();
-			su.setId(rs.getString("id"));
+	private static final class InterrogationMapper implements RowMapper<Interrogation> {
+		public Interrogation mapRow(ResultSet rs, int rowNum) throws SQLException         {
+			Interrogation interro = new Interrogation();
+			interro.setId(rs.getString("id"));
 			QuestionnaireModel model = new QuestionnaireModel();
 			model.setId(rs.getString("questionnaire_model_id"));
-			su.setQuestionnaireModel(model);
-			su.setSurveyUnitId(rs.getString("survey_unit_id"));
-			return su;
+			interro.setQuestionnaireModel(model);
+			interro.setSurveyUnitId(rs.getString("survey_unit_id"));
+			return interro;
 		}
 	}
 }

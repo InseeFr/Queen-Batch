@@ -15,7 +15,7 @@ public interface PersonalizationDao {
 	 * @param surveyUnitId
 	 * @return
 	 */
-	List<Personalization> findBySurveyUnitId(String surveyUnitId);
+	List<Personalization> findByInterrogationId(String surveyUnitId);
 	
 	/**
 	 * Retrieve the value by the id passed in parameter

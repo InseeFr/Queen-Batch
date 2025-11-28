@@ -1,12 +1,12 @@
 package fr.insee.queen.batch.object;
 
 /**
- * Object XmlSurveyUnit : represent the survey unit in XML file
+ * Object XmlInterrogation : represent the survey unit in XML file
  * 
  * @author Claudel Benjamin
  * 
  */
-public class SurveyUnit {
+public class Interrogation {
 
 	/**
 	 * The id of survey unit
@@ -45,30 +45,9 @@ public class SurveyUnit {
 	private Personalization personalization;
 
 	/**
-	 * Constructor with all args
-	 * @param id
-	 * @param campaign
-	 * @param questionnaireModel
-	 * @param comment
-	 * @param data
-	 * @param stateData
-	 * @param personalization
-	 */
-	public SurveyUnit(String id, String surveyUnitId, Campaign campaign, QuestionnaireModel questionnaireModel,
-					  Comment comment, Data data, StateData stateData, Personalization personalization) {
-		this.id = id;
-		this.campaign = campaign;
-		this.questionnaireModel = questionnaireModel;
-		this.data = data;
-		this.stateData = stateData;
-		this.personalization = personalization;
-		this.comment = comment;
-	}
-
-	/**
 	 * Default constructor
 	 */
-	public SurveyUnit() {
+	public Interrogation() {
 	}
 
 	/**
@@ -129,7 +108,7 @@ public class SurveyUnit {
 	}
 
 	/**
-	 * @param comment comment to set
+	 * @param personalization to set
 	 */
 	public void setPersonalization(Personalization personalization) {
 		this.personalization = personalization;

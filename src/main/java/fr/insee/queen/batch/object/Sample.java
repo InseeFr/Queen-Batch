@@ -18,10 +18,10 @@ public class Sample {
 	*/
 	private Campaign campaign;
 	
-	private List<SurveyUnit> surveyUnits;
+	private List<Interrogation> surveyUnits;
 	
 
-	public Sample(String fileName, Campaign campaign, List<SurveyUnit> surveyUnits) {
+	public Sample(String fileName, Campaign campaign, List<Interrogation> surveyUnits) {
 		super();
 		this.fileName = fileName;
 		this.campaign = campaign;
@@ -60,14 +60,14 @@ public class Sample {
 	/**
 	 * @return the surveyUnits
 	 */
-	public List<SurveyUnit> getSurveyUnits() {
+	public List<Interrogation> getInterrogations() {
 		return surveyUnits;
 	}
 
 	/**
 	 * @param surveyUnits the surveyUnits to set
 	 */
-	public void setSurveyUnits(List<SurveyUnit> surveyUnits) {
+	public void setInterrogations(List<Interrogation> surveyUnits) {
 		this.surveyUnits = surveyUnits;
 	}
 }

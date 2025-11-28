@@ -10,10 +10,10 @@ import org.json.simple.parser.ParseException;
  */
 public interface DataDao {
     /**
-     * Get the data by a SurveyUnit id
-     * @param suId
+     * Get the data by a Interrogation id
+     * @param interrogationId
      * @return
      * @throws ParseException
      */
-	JSONObject getDataBySurveyUnitId(String suId) throws ParseException;
+	JSONObject getDataByInterrogationId(String interrogationId) throws ParseException;
 }

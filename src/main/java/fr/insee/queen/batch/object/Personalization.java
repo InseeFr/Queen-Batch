@@ -10,17 +10,17 @@ public class Personalization {
 	
 	private JSONArray value;
 	
-	private Interrogation surveyUnit;
+	private Interrogation interrogation;
 	
 	public Personalization() {
 		
 	}
 	
-	public Personalization(UUID id, JSONArray value, Interrogation surveyUnit) {
+	public Personalization(UUID id, JSONArray value, Interrogation interrogation) {
 		super();
 		this.id = id;
 		this.value = value;
-		this.surveyUnit = surveyUnit;
+		this.interrogation = interrogation;
 	}
 
 	/**
@@ -41,7 +41,7 @@ public class Personalization {
 	 * @return the surveyUnit
 	 */
 	public Interrogation getInterrogation() {
-		return surveyUnit;
+		return interrogation;
 	}
 
 	/**
@@ -62,6 +62,6 @@ public class Personalization {
 	 * @param surveyUnit the surveyUnit to set
 	 */
 	public void setInterrogation(Interrogation surveyUnit) {
-		this.surveyUnit = surveyUnit;
+		this.interrogation = surveyUnit;
 	}
 }

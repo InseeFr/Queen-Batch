@@ -36,7 +36,7 @@ public class StateData {
 	/**
 	* The Interrogation associated to the StateData
 	*/
-	private Interrogation surveyUnit;
+	private Interrogation interrogation;
 
 	/**
 	 * Constructor with id only
@@ -59,7 +59,7 @@ public class StateData {
 		this.state = state;
 		this.date = date;
 		this.currentPage = currentPage;
-		this.surveyUnit = surveyUnit;
+		this.interrogation = surveyUnit;
 	}
 
 	/**
@@ -122,14 +122,14 @@ public class StateData {
 	 * @return the surveyUnit
 	 */
 	public Interrogation getInterrogation() {
-		return surveyUnit;
+		return interrogation;
 	}
 
 	/**
-	 * @param surveyUnit the surveyUnit to set
+	 * @param interrogation the surveyUnit to set
 	 */
-	public void setInterrogation(Interrogation surveyUnit) {
-		this.surveyUnit = surveyUnit;
+	public void setInterrogation(Interrogation interrogation) {
+		this.interrogation = interrogation;
 	}
 	
 }

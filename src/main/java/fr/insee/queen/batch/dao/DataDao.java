@@ -1,12 +1,7 @@
 package fr.insee.queen.batch.dao;
 
-import java.sql.SQLException;
-import java.util.List;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
-
-import fr.insee.queen.batch.object.SurveyUnit;
 
 /**
  * Interface for the Data entity
@@ -14,37 +9,11 @@ import fr.insee.queen.batch.object.SurveyUnit;
  *
  */
 public interface DataDao {
-	
-	/**
-	 * Create a Data in database
-	 * @param surveyUnit
-	 * @throws SQLException
-	 */
-    void createData(SurveyUnit surveyUnit) throws SQLException;
-    
     /**
-     * Update data for a SU
-     * @param surveyUnit
-     */
-    void updateData(SurveyUnit surveyUnit) throws SQLException;
-    
-    /**
-     * Get the data by a SurveyUnit id
-     * @param suId
+     * Get the data by a Interrogation id
+     * @param interrogationId
      * @return
      * @throws ParseException
      */
-	JSONObject getDataBySurveyUnitId(String suId) throws ParseException;
-	
-	/**
-	 * Delete data by a list of SU
-	 * @param lstSu
-	 */
-	int deleteDataBySurveyUnitIds(List<String> lstSu);
-
-	/**
-	 * Set data to empty json for a list of SU
-	 * @param lstSu
-	 */
-	int setDataToEmptyBySurveyUnitIds(List<String> lstSu);
+	JSONObject getDataByInterrogationId(String interrogationId) throws ParseException;
 }

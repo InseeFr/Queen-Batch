@@ -17,21 +17,21 @@ public class Comment {
 	private JSONObject value;
 	
 	/**
-	 * SurveyUnit associated to the comment
+	 * Interrogation associated to the comment
 	 */
-	private SurveyUnit surveyUnit;
+	private Interrogation interrogation;
 	
 	/**
 	 * All args constructor
 	 * @param id
 	 * @param value
-	 * @param surveyUnit
+	 * @param interrogation
 	 */
-	public Comment(UUID id, JSONObject value, SurveyUnit surveyUnit) {
+	public Comment(UUID id, JSONObject value, Interrogation interrogation) {
 		super();
 		this.id = id;
 		this.value = value;
-		this.surveyUnit = surveyUnit;
+		this.interrogation = interrogation;
 	}
 	
 	/**
@@ -66,8 +66,8 @@ public class Comment {
 	/**
 	 * @return the surveyUnit
 	 */
-	public SurveyUnit getSurveyUnit() {
-		return surveyUnit;
+	public Interrogation getInterrogation() {
+		return interrogation;
 	}
 
 	/**
@@ -85,9 +85,9 @@ public class Comment {
 	}
 
 	/**
-	 * @param surveyUnit the surveyUnit to set
+	 * @param interrogation the INTERRO to set
 	 */
-	public void setSurveyUnit(SurveyUnit surveyUnit) {
-		this.surveyUnit = surveyUnit;
+	public void setInterrogation(Interrogation interrogation) {
+		this.interrogation = interrogation;
 	}
 }

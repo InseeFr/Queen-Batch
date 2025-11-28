@@ -108,12 +108,12 @@ public class PathUtils {
         if (!PathUtils.isDirectoryExist(out + "/extractdata/" + campaignId)) {
             PathUtils.createDirectory(out + "/extractdata/" + campaignId);
         }
-        if (batchOption.equals(BatchOption.EXTRACTDATA)) {
+        if (batchOption.equals(BatchOption.EXTRACTDATAINIT)) {
             PathUtils.createDirectory(out + "/extractdata/" + campaignId + "/differential");
             PathUtils.createDirectory(out + "/extractdata/" + campaignId + "/differential/data");
             PathUtils.createDirectory(out + "/extractdata/" + campaignId + "/differential/paradata");
         }
-        if (batchOption.equals(BatchOption.EXTRACTDATACOMPLETE)) {
+        if (batchOption.equals(BatchOption.EXTRACTDATACOMPLETED)) {
             PathUtils.createDirectory(out + "/extractdata/" + campaignId + "/complete");
             PathUtils.createDirectory(out + "/extractdata/" + campaignId + "/complete/data");
             PathUtils.createDirectory(out + "/extractdata/" + campaignId + "/complete/paradata");

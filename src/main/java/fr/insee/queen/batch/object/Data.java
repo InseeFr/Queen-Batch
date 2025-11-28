@@ -16,19 +16,19 @@ public class Data {
 	private JSONObject value;
 	
 	/**
-	 * SurveyUnit related to the data
+	 * Interrogation related to the data
 	 */
-	private SurveyUnit surveyUnit;
+	private Interrogation interrogation;
 	
 	public Data(){
 		
 	}
 
-	public Data(UUID id, JSONObject value, SurveyUnit surveyUnit) {
+	public Data(UUID id, JSONObject value, Interrogation interrogation) {
 		super();
 		this.id = id;
 		this.value = value;
-		this.surveyUnit = surveyUnit;
+		this.interrogation = interrogation;
 	}
 
 	/**
@@ -48,8 +48,8 @@ public class Data {
 	/**
 	 * @return the surveyUnit
 	 */
-	public SurveyUnit getSurveyUnit() {
-		return surveyUnit;
+	public Interrogation getInterrogation() {
+		return interrogation;
 	}
 
 	/**
@@ -67,9 +67,9 @@ public class Data {
 	}
 
 	/**
-	 * @param surveyUnit the surveyUnit to set
+	 * @param interrogation the surveyUnit to set
 	 */
-	public void setSurveyUnit(SurveyUnit surveyUnit) {
-		this.surveyUnit = surveyUnit;
+	public void setInterrogation(Interrogation interrogation) {
+		this.interrogation = interrogation;
 	}
 }

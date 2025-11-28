@@ -12,6 +12,8 @@ public class SurveyUnit {
 	 * The id of survey unit
 	 */
 	private String id;
+
+	private String surveyUnitId;
 	
 	/**
 	 * Campaign associated to the survey-unit
@@ -52,8 +54,8 @@ public class SurveyUnit {
 	 * @param stateData
 	 * @param personalization
 	 */
-	public SurveyUnit(String id, Campaign campaign, QuestionnaireModel questionnaireModel, 
-			Comment comment, Data data, StateData stateData, Personalization personalization) {
+	public SurveyUnit(String id, String surveyUnitId, Campaign campaign, QuestionnaireModel questionnaireModel,
+					  Comment comment, Data data, StateData stateData, Personalization personalization) {
 		this.id = id;
 		this.campaign = campaign;
 		this.questionnaireModel = questionnaireModel;
@@ -109,6 +111,14 @@ public class SurveyUnit {
 	 */
 	public void setStateData(StateData stateData) {
 		this.stateData = stateData;
+	}
+
+	public String getSurveyUnitId() {
+		return surveyUnitId;
+	}
+
+	public void setSurveyUnitId(String surveyUnitId) {
+		this.surveyUnitId = surveyUnitId;
 	}
 
 	/**

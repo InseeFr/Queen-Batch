@@ -50,12 +50,6 @@ public class ApplicationContext {
 	@Value("${fr.insee.queen.folder.out}")
 	private String FOLDER_OUT;
 	
-	@Value("${fr.insee.queen.key.paradata.id}")
-	private String keyParadataIdSu;
-	
-	@Value("${fr.insee.queen.key.paradata.events}")
-	private String keyParadataEvents;
-	
 	private String filename = "";
 	
 	/***
@@ -116,24 +110,6 @@ public class ApplicationContext {
 	@Bean
 	public String folderOut() {
 		return FOLDER_OUT;
-	}
-	
-	/**
-	 * Bean to get the idSu key for paradata
-	 * @return
-	 */
-	@Bean
-	public String getKeyParadataIdSu() {
-		return keyParadataIdSu;
-	}
-
-	/**
-	 * Bean to get the events key for paradata
-	 * @return
-	 */
-	@Bean
-	public String getKeyParadataEvents() {
-		return keyParadataEvents;
 	}
 	
 	/**

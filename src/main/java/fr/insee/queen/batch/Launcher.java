@@ -14,7 +14,10 @@ import fr.insee.queen.batch.exception.ArgumentException;
 import fr.insee.queen.batch.exception.FolderException;
 import fr.insee.queen.batch.service.ExtractionService;
 import fr.insee.queen.batch.utils.PathUtils;
-import fr.insee.queen.batch.utils.XmlUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Launcher : Queen Batch main class. Used for extraction
@@ -35,15 +38,13 @@ public abstract class Launcher {
 	static org.springframework.context.ApplicationContext context;
 
 	static ExtractionService extractionService;
-	static XmlUtils xmlUtils;
-	
+
 	
 	private static final Logger logger = LogManager.getLogger(Launcher.class);
 	
 	public static void main(String[] args) {
 		context = new AnnotationConfigApplicationContext(ApplicationContext.class);
 		extractionService = context.getBean(ExtractionService.class);
-		xmlUtils = context.getBean(XmlUtils.class);
 		FOLDER_IN = context.getBean("folderIn", String.class);
 		FOLDER_OUT = context.getBean("folderOut", String.class);
 
@@ -84,20 +85,28 @@ public abstract class Launcher {
 
 	public static BatchErrorCode runBatch(String[] options) throws ArgumentException {
 		if (options.length == 0) {
-			throw new ArgumentException("Batch type is empty, you must choose between [EXTRACTDATA] or [EXTRACTDATACOMPLETE]");
+			throw new ArgumentException("Batch type is empty, you must choose between [EXTRACTDATAINIT] or [EXTRACTDATACOMPLETE]");
 		}
+
+		if (options.length == 1) {
+			throw new ArgumentException("You need to specify which campaigns to extract");
+		}
+
 		BatchOption batchOption;
 		try {	
 			batchOption = BatchOption.valueOf(options[0].trim());
 		}catch(Exception e) {
-			throw new ArgumentException("Wrong batch type, you must choose between [EXTRACTDATA] or [EXTRACTDATACOMPLETE]");
+			throw new ArgumentException("Wrong batch type, you must choose between [EXTRACTDATAINIT] or [EXTRACTDATACOMPLETED]");
 		}
+
+		List<String> campaignIds = new ArrayList<>(Arrays.asList(options).subList(1, options.length));
+
 		switch(batchOption) {
-			case EXTRACTDATA :
-			case EXTRACTDATACOMPLETE :
-				return extractionService.extract(batchOption, FOLDER_OUT);
+			case EXTRACTDATAINIT :
+			case EXTRACTDATACOMPLETED:
+				return extractionService.extract(batchOption, campaignIds, FOLDER_OUT);
 			default :
-				throw new ArgumentException("Wrong batch type, you must choose between [EXTRACTDATA] or [EXTRACTDATACOMPLETE]");
+				throw new ArgumentException("Wrong batch type, you must choose between [EXTRACTDATAINIT] or [EXTRACTDATACOMPLETED]");
 		}
 	}
 }

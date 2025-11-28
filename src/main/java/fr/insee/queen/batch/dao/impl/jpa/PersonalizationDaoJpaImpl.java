@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import fr.insee.queen.batch.dao.PersonalizationDao;
 import fr.insee.queen.batch.object.Personalization;
-import fr.insee.queen.batch.object.SurveyUnit;
 
 /**
  * Service for the Personalization entity that implements the interface associated
@@ -31,64 +29,13 @@ public class PersonalizationDaoJpaImpl implements PersonalizationDao{
 	@Autowired
 	@Qualifier("jdbcTemplate")
 	JdbcTemplate jdbcTemplate;
-	
-	/**
-	 * Create a personalization for a SurveyUnit
-	 */
-	@Override
-	public void createPersonalization(SurveyUnit surveyUnit) throws SQLException {
-		StringBuilder qString = new StringBuilder("INSERT INTO personalization (id, value, survey_unit_id) VALUES (?, ?, ?)");
-		PGobject value = new PGobject();
-		value.setType("json");
-		value.setValue(surveyUnit.getPersonalization().getValue().toJSONString());
-		jdbcTemplate.update(qString.toString(), surveyUnit.getPersonalization().getId(), value, surveyUnit.getId());
-	}
-
-	/**
-	 * Update personalization for a SurveyUnit
-	 */
-	@Override
-	public void updatePersonalization(SurveyUnit surveyUnit) throws SQLException {
-		List<Personalization> personalizationTemp = findBySurveyUnitId(surveyUnit.getId());
-		if(personalizationTemp != null && !personalizationTemp.isEmpty()) {
-			StringBuilder qString = new StringBuilder("UPDATE personalization SET value = ? WHERE survey_unit_id= ?");
-			personalizationTemp.forEach(pers -> {
-				PGobject value = new PGobject();
-				value.setType("json");
-				try {
-					value.setValue(surveyUnit.getPersonalization().getValue().toJSONString());
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				jdbcTemplate.update(qString.toString(), value, surveyUnit.getId());
-			});
-		} else {
-			createPersonalization(surveyUnit);
-		}
-		
-		
-	}
-
-	/**
-	 * Delete all the personalizations for a list of SurveyUnit
-	 */
-	@Override
-	public void deleteBySurveyUnitIds(List<String> lstSu) {
-		String values = lstSu.stream().map(id->"?").collect(Collectors.joining(","));
-		StringBuilder qStringBuilder = new StringBuilder("DELETE FROM personalization AS pers ")
-		.append("USING survey_unit AS su ")
-		.append("WHERE su.id = pers.survey_unit_id ")
-		.append("AND su.id IN (%s)");
-		String qString = String.format(qStringBuilder.toString(), values);
-		jdbcTemplate.update(qString, lstSu.toArray());
-	}
 
 	/**
 	 * Get the personalization for a SurveyUnit id
 	 */
 	@Override
 	public List<Personalization> findBySurveyUnitId(String surveyUnitId) {
-		StringBuilder qString = new StringBuilder("SELECT * FROM personalization WHERE survey_unit_id= ?");
+		StringBuilder qString = new StringBuilder("SELECT * FROM personalization WHERE interrogation_id= ?");
 		return jdbcTemplate.query(qString.toString(), new Object[]{surveyUnitId}, new PersonalizationModelMapper());
 	}
 	

@@ -1,8 +1,8 @@
 package fr.insee.queen.batch.dao;
 
-import java.util.List;
-
 import fr.insee.queen.batch.object.SurveyUnit;
+
+import java.util.List;
 
 /**
  * Interface for the SurveyUnit entity
@@ -10,65 +10,18 @@ import fr.insee.queen.batch.object.SurveyUnit;
  *
  */
 public interface SurveyUnitDao {
-    /**
-     * Create a SurveyUnit in database
-     * @param surveyUnit
-     * @param idCampaign
-     */
-    void createSurveyUnit(SurveyUnit surveyUnit);
-    
-	/**
-     * Check if an SurveyUnit already exist in database
-     * @param xmlId
-     * @return boolean
-     * @throws Exception
-     */
-	boolean existSurveyUnit(String xmlId);
 
 	/**
 	 * Get all SU for a campaign
 	 * @param campaignId
 	 * @return
 	 */
-	List<String> getAllSurveyUnitByCamapignId(String campaignId);
+	List<SurveyUnit> findSurveyUnits(String campaignId, List<String> states);
 
-	/**
-	 * Get all SU with state not null for a campaign
-	 * @param campaignId
-	 * @return
-	 */
-	List<SurveyUnit> getAllSurveyUnitsWithStateByCampaignId(String campaignId);
-
-	/**
-	 * Get unexisting SurveyUnits
-	 * @param lstSu
-	 * @return
-	 */
-	List<String> findUnexistingSurveyUnitsInList(List<String> lstSu);
-
-	List<String> findSurveyUnitsByStateByCampaignId(String campaignId, String state);
 	/**
 	 * Get Survey unit by his id
 	 * @param id
 	 * @return
 	 */
 	String findQuestionnaireIdBySurveyUnitId(String id);
-
-	/**
-	 * Delete a list of SU
-	 * @param lstSu
-	 */
-	void deleteSurveyUnits(List<String> lstSu);
-
-	/**
-	 * Update a SurveyUnit
-	 * @param surveyUnit
-	 */
-	void updateSurveyUnit(SurveyUnit surveyUnit);
-
-	/**
-	 * Get ids for survey unit with state "validated"
-	 * @return
-	 */
-	List<String> findSurveyUnitsValidatedIdsByCampaignId(String campaignId);
 }

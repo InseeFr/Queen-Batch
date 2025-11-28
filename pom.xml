@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.insee.queen</groupId>
 	<artifactId>queen-batch</artifactId>
-	<version>4.4.0</version>
+	<version>5.0.0</version>
 	<packaging>jar</packaging>
 	<name>QueenBatch</name>
 	<description>Queen Batch</description>
@@ -79,12 +79,6 @@
 		    <groupId>org.junit.jupiter</groupId>
 		    <artifactId>junit-jupiter-engine</artifactId>
 		    <version>5.10.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>${testcontainers.version}</version>
-			<scope>test</scope>
 		</dependency>
 
 		<!-- For JSON format -->
@@ -165,18 +159,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>3.1.2</version>
-					<configuration>
-						<runOrder>alphabetical</runOrder>
-						<includes>
-							<include>UnitTests.java</include>
-							<include>TestEndToEndJpa.java</include>
-						</includes>
-						<forkedProcessExitTimeoutInSeconds>500</forkedProcessExitTimeoutInSeconds>
-						<argLine>-Xmx2048m -Xmx1G</argLine>
-						<environmentVariables>
-								<TESTCONTAINERS_RYUK_DISABLED>true</TESTCONTAINERS_RYUK_DISABLED>
-						</environmentVariables>
-					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>

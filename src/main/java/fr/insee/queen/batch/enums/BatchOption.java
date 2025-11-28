@@ -1,26 +1,21 @@
 package fr.insee.queen.batch.enums;
 
+import java.util.List;
+
 public enum BatchOption {
-	EXTRACTDATA("EXTRACTDATA"), EXTRACTDATACOMPLETE("EXTRACTDATACOMPLETE");
-	
-	/**
-	 * label of the BatchOption
-	 */
-	private String label;
+	EXTRACTDATAINIT(List.of("INIT")), EXTRACTDATACOMPLETED(List.of("VALIDATED", "EXTRACTED"));
+
+	private List<String> states;
 
 	/**
 	 * Defaut constructor for BatchOption
-	 * @param label
+	 * @param states
 	 */
-	BatchOption(String label) {
-		this.label = label;
+	BatchOption(List<String> states) {
+		this.states = states;
 	}
 
-	/**
-	 * Get the label for BatchOption
-	 * @return label
-	 */
-	public String getLabel() {
-		return label;
+	public List<String> getStates() {
+		return states;
 	}
 }

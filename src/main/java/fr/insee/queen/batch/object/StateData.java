@@ -34,9 +34,9 @@ public class StateData {
 	private String currentPage;
 	
 	/**
-	* The SurveyUnit associated to the StateData
+	* The Interrogation associated to the StateData
 	*/
-	private SurveyUnit surveyUnit;
+	private Interrogation interrogation;
 
 	/**
 	 * Constructor with id only
@@ -53,13 +53,13 @@ public class StateData {
 	 * @param currentPage
 	 * @param surveyUnit
 	 */
-	public StateData(UUID id, String state, Long date, String currentPage, SurveyUnit surveyUnit) {
+	public StateData(UUID id, String state, Long date, String currentPage, Interrogation surveyUnit) {
 		super();
 		this.id = id;
 		this.state = state;
 		this.date = date;
 		this.currentPage = currentPage;
-		this.surveyUnit = surveyUnit;
+		this.interrogation = surveyUnit;
 	}
 
 	/**
@@ -121,15 +121,15 @@ public class StateData {
 	/**
 	 * @return the surveyUnit
 	 */
-	public SurveyUnit getSurveyUnit() {
-		return surveyUnit;
+	public Interrogation getInterrogation() {
+		return interrogation;
 	}
 
 	/**
-	 * @param surveyUnit the surveyUnit to set
+	 * @param interrogation the surveyUnit to set
 	 */
-	public void setSurveyUnit(SurveyUnit surveyUnit) {
-		this.surveyUnit = surveyUnit;
+	public void setInterrogation(Interrogation interrogation) {
+		this.interrogation = interrogation;
 	}
 	
 }

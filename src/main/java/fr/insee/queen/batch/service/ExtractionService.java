@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import fr.insee.queen.batch.object.Interrogation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -27,21 +27,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
-
 import fr.insee.lunatic.conversion.data.JSONLunaticDataToXML;
 import fr.insee.queen.batch.dao.CampaignDao;
 import fr.insee.queen.batch.dao.DataDao;
-import fr.insee.queen.batch.dao.ParadataEventDao;
 import fr.insee.queen.batch.dao.PersonalizationDao;
-import fr.insee.queen.batch.dao.StateDataDao;
-import fr.insee.queen.batch.dao.SurveyUnitDao;
+import fr.insee.queen.batch.dao.InterrogationDao;
 import fr.insee.queen.batch.enums.BatchErrorCode;
 import fr.insee.queen.batch.enums.BatchOption;
 import fr.insee.queen.batch.exception.BatchException;
-import fr.insee.queen.batch.exception.DataBaseException;
 import fr.insee.queen.batch.object.Campaign;
 import fr.insee.queen.batch.object.Personalization;
 import fr.insee.queen.batch.utils.PathUtils;
@@ -58,16 +51,11 @@ public class ExtractionService {
 	@Autowired
 	CampaignDao campaignDao;
 	@Autowired
-	SurveyUnitDao surveyUnitDao;
+	InterrogationDao interrogationDao;
 	@Autowired
 	DataDao dataDao;
 	@Autowired
 	PersonalizationDao personalizationDao;
-	@Autowired
-	ParadataEventDao paradataEventDao;
-	@Autowired
-	StateDataDao stateDataDao;
-	
 	@Autowired(required=false)
 	@Qualifier("connection")
 	Connection connection;
@@ -82,16 +70,16 @@ public class ExtractionService {
 	 * @param out
 	 * @return
 	 */
-	public BatchErrorCode extract(BatchOption batchOption, String out) {
+	public BatchErrorCode extract(BatchOption batchOption, List<String> campaignIds, String out) {
 		BatchErrorCode batchErrorCode = BatchErrorCode.OK;
 		this.batchOption = batchOption;
 		List<Campaign> lstCampaign;
-		lstCampaign = campaignDao.findAll();
+		lstCampaign = campaignDao.findByCampaignIds(campaignIds);
 		List<String> lstCampaignError = new ArrayList<>();
 		List<String> lstCampaignSuccess = new ArrayList<>();
 		for (Campaign c : lstCampaign) {
 			try {
-				extractCampaign(batchOption, c, List.of(), out);
+				extractCampaign(batchOption, c, out);
 				lstCampaignSuccess.add(c.getId());
 			}catch(Exception e) {
 				logger.log(Level.WARN, "Error occured during extraction of campaign {}", c.getId());
@@ -115,33 +103,29 @@ public class ExtractionService {
 	/**
 	 * Method use to extract a campaign
 	 * @param c
-	 * @param lstSu
 	 * @param out
 	 * @throws BatchException
-	 * @throws IOException
-	 * @throws SQLException
-	 * @throws DataBaseException
 	 */
-	public void extractCampaign(BatchOption batchOption, Campaign c, List<String> lstSu, String out) throws BatchException, IOException, SQLException, DataBaseException  {
+	public void extractCampaign(BatchOption batchOption, Campaign c, String out) throws BatchException  {
 		if(this.batchOption == null)
 			this.batchOption = batchOption;
 		PathUtils.createFolderTreeExtract(this.batchOption, out, c.getId());
 		StringBuilder fileName = new StringBuilder(out)
 		.append("/extractdata/")
 		.append(c.getId());
-		if(this.batchOption.equals(BatchOption.EXTRACTDATA)) {
-			lstSu = surveyUnitDao.findSurveyUnitsValidatedIdsByCampaignId(c.getId());
-			fileName.append("/differential/data/data.diff.");
+
+		List<Interrogation> interrogations = interrogationDao.findInterrogations(c.getId(), this.batchOption.getStates());
+
+		if(this.batchOption.equals(BatchOption.EXTRACTDATAINIT)) {
+			fileName.append("/differential/data/data.init.");
 		}
-		if(this.batchOption.equals(BatchOption.EXTRACTDATACOMPLETE)) {
-			lstSu = surveyUnitDao.getAllSurveyUnitByCamapignId(c.getId());
+		if(this.batchOption.equals(BatchOption.EXTRACTDATACOMPLETED)) {
 			fileName.append("/complete/data/data.complete.");
 		}
 		fileName.append(c.getId())
 		.append(".")
 		.append(PathUtils.getTimestampForPath())
 		.append(".xml");
-		extractParadata(this.batchOption, c, out, lstSu);
 		Document doc = new Document();
 		File file = new File(fileName.toString());
 		Element campaign = new Element("Campaign");
@@ -149,7 +133,7 @@ public class ExtractionService {
 			campaign
 					.addContent(new Element("Id").addContent(c.getId()))
 					.addContent(new Element("Label").addContent(c.getLabel()))
-					.addContent(getSureyUnitsElement(lstSu));
+					.addContent(getInterrogationsElement(interrogations));
 			doc.setRootElement(campaign);
 			// Create the XML
 			XMLOutputter outter = new XMLOutputter();
@@ -163,103 +147,50 @@ public class ExtractionService {
 	}
 
 	/**
-	 * This method extract the paradata for a campaign
-	 * and a list of SurveyUnit
-	 * @param batchOption
-	 * @param c
-	 * @param out
-	 * @param lstSu
-	 * @throws IOException
-	 * @throws SQLException
-	 * @throws DataBaseException
-	 */
-	@SuppressWarnings("resource")
-	public void extractParadata(BatchOption batchOption, Campaign c, String out, List<String> lstSu) throws IOException, SQLException, DataBaseException {
-		connection.setAutoCommit(false);
-		try {
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			for(String id : lstSu) {
-				StringBuilder fileName = new StringBuilder(out)
-				.append("/extractdata/")
-				.append(c.getId());
-				if(batchOption.equals(BatchOption.EXTRACTDATA)) {
-					fileName.append("/differential/paradata/paradata.diff.");
-				}
-				if(batchOption.equals(BatchOption.EXTRACTDATACOMPLETE)) {
-					fileName.append("/complete/paradata/paradata.complete.");
-				}
-				fileName.append(c.getId())
-				.append(".")
-				.append(id)
-				.append(".json");
-				if(batchOption.equals(BatchOption.EXTRACTDATACOMPLETE) && PathUtils.isFileExist(fileName.toString())) {
-					new File(fileName.toString()).delete();
-				}
-				FileWriter fileWriter = new FileWriter(fileName.toString(), true);
-				JSONObject paradatas = paradataEventDao.findBySurveyUnitId(id);
-				paradatas.remove("ids");
-				fileWriter.write(gson.toJson(JsonParser.parseString(paradatas.toJSONString())));
-				fileWriter.flush();
-				fileWriter.close();
-			}
-			lstSu.stream().forEach(id -> stateDataDao.updateSurveyUnitStateById(id, "EXTRACTED"));
-		} catch (Exception e) {
-			logger.log(Level.WARN, "Error message : {}", e.getMessage());
-			connection.rollback();
-			connection.setAutoCommit(true);
-			throw new DataBaseException("Error during update state of SU in DB ... Rollback : " + e.getMessage());
-		} finally {
-			connection.setAutoCommit(true);
-		}
-	}
-
-	/**
-	 * Construct the <SurveyUnits> tag
+	 * Construct the <Interrogations> tag
 	 * @param lstSu
 	 * @return
 	 * @throws Exception
 	 */
-	private Element getSureyUnitsElement(List<String> lstSu) throws Exception {
-		Element surveyUnits = new Element("SurveyUnits");
-		for (String suId : lstSu) {
-			String qmId = surveyUnitDao.findQuestionnaireIdBySurveyUnitId(suId);
-			surveyUnits.addContent(getSurveyUnitContent(suId, qmId));
+	private Element getInterrogationsElement(List<Interrogation> lstSu) throws Exception {
+		Element surveyUnits = new Element("Interrogations");
+		for (Interrogation su : lstSu) {
+			surveyUnits.addContent(getInterrogationContent(su));
 		}
 		return surveyUnits;
 
 	}
 
 	/**
-	 * Construct the <SurveyUnit> tag
-	 * @param suId
-	 * @param qmId
+	 * Construct the <Interrogation> tag
 	 * @return
 	 * @throws Exception
 	 */
-	private Element getSurveyUnitContent(String suId, String qmId) throws Exception {
-		return new Element("SurveyUnit")
-					.addContent(new Element("Id").addContent(suId))
-					.addContent(new Element("QuestionnaireModelId").addContent(qmId))
-					.addContent(getDataContent(suId))
-					.addContent(getPersonalizationContent(suId));
+	private Element getInterrogationContent(Interrogation interro) throws Exception {
+		return new Element("Interrogation")
+					.addContent(new Element("Id").addContent(interro.getId()))
+					.addContent(new Element("SurveyUnitId").addContent(interro.getSurveyUnitId()))
+					.addContent(new Element("QuestionnaireModelId").addContent(interro.getQuestionnaireModel().getId()))
+					.addContent(getDataContent(interro.getId()))
+					.addContent(getPersonalizationContent(interro.getId()));
 	}
 
 	/**
 	 * Construct the <Data> tag
-	 * @param suId
+	 * @param interroId
 	 * @return
 	 * @throws Exception
 	 */
-	private Element getDataContent(String suId) throws Exception {
+	private Element getDataContent(String interroId) throws Exception {
 		JSONLunaticDataToXML jsonLunaticDataToXML = new JSONLunaticDataToXML();
-		JSONObject dataJson = dataDao.getDataBySurveyUnitId(suId);
+		JSONObject dataJson = dataDao.getDataByInterrogationId(interroId);
 		// create a temporary file
 		Path tempFilePath = Files.createTempFile(null, null);
 		File tempFile = tempFilePath.toFile();
 		try (FileWriter file = new FileWriter(tempFile)) {
 			file.write(dataJson.toJSONString());
 		} catch (IOException e) {
-			logger.log(Level.ERROR, "Error during extract Data content for Survey-Unit {}", suId);
+			logger.log(Level.ERROR, "Error during extract Data content for Survey-Unit {}", interroId);
 		}
 		File xmlData = jsonLunaticDataToXML.transform(tempFile);
 		SAXBuilder builder = new SAXBuilder();
@@ -277,14 +208,14 @@ public class ExtractionService {
 	
 	/**
 	 * Construct the <Personalization> tag
-	 * @param suId
+	 * @param interroId
 	 * @return
 	 * @throws ParseException
 	 */
 	@SuppressWarnings("rawtypes")
-	private List<Element> getPersonalizationContent(String suId) throws ParseException{
+	private List<Element> getPersonalizationContent(String interroId) throws ParseException{
 		List<Element> personalizationsElements = new ArrayList<>();
-		List<Personalization> personalizations = personalizationDao.findBySurveyUnitId(suId);
+		List<Personalization> personalizations = personalizationDao.findByInterrogationId(interroId);
 		for (Personalization personalization : personalizations) {
 			JSONArray jsonArray = personalizationDao.getValueById(personalization.getId());
 			if(!jsonArray.isEmpty()) {
